@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
 
 
@@ -12,4 +12,17 @@ export const getLatestVersionWLCV = () => {
     },
   })
 }
+
+export const useUploadCV = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/whitelist/new-version-cv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    }
+  });
+};
 
