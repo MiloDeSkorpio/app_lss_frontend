@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
 import { getLatestVersionWLCV } from "../../hooks/hooksWLCV"
+import { convertToCSV, downloadFile, getCurrentDateTime } from "../../utils/FileHelpers"
 
 const SamsView = () => {
   const navigate = useNavigate()
@@ -8,46 +9,10 @@ const SamsView = () => {
   const totalSAMSCV = samsCV?.length || 0
   const lastVersionCV = samsCV?.[0]?.version || "N/A"
 
-  const convertToCSV = (objArray: any[]) => {
-    const array =
-      typeof objArray !== "object" ? JSON.parse(objArray) : objArray
-    let str = ""
-
-    // Encabezados
-    const headers = Object.keys(array[0])
-    str += headers.join(",") + "\r\n"
-
-    // Datoss
-    array.forEach((item: { [x: string]: string }) => {
-      let line = ""
-      headers.forEach((header) => {
-        if (line !== "") line += ","
-        line += item[header]
-      })
-      str += line + "\r\n"
-    })
-
-    return str
-  }
-
-  const getCurrentDateTime = () => {
-    const now = new Date()
-
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, "0")
-    const day = String(now.getDate()).padStart(2, "0")
-
-    const hours = String(now.getHours()).padStart(2, "0")
-    const minutes = String(now.getMinutes()).padStart(2, "0")
-    const seconds = String(now.getSeconds()).padStart(2, "0")
-
-    return `${year}${month}${day}_${hours}${minutes}${seconds}`
-  }
-
   const handleDownloadCV = (samsCV: any) => {
     const dateTime = getCurrentDateTime()
+    
     // 1. Archivo completo
-
     const allSamsCV = samsCV.map((item: any) => ({
       serial_dec: item.serial_dec,
       serial_hex: item.serial_hex,
@@ -77,21 +42,6 @@ const SamsView = () => {
     }))
     const hexCSV = convertToCSV(hexOnlyData)
     downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
-  }
-
-  // Función auxiliar para descargar archivos
-  const downloadFile = (data: string, filename: string, type: string) => {
-    const blob = new Blob([data], { type })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    setTimeout(() => {
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }, 0)
   }
 
   const countOperator = (op: string) =>
