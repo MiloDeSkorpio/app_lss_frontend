@@ -5,7 +5,7 @@ interface OperatorCardProps {
   lastVersion: string
   totalRecords: number
   operators: { label: string ;value: number }[]
-  onDownload?: () => void
+  onDownload?: (e: React.MouseEvent<HTMLButtonElement>) => void
   onUpdate?: () => void
   onSearch?: () => void
   onHistory?: () => void
