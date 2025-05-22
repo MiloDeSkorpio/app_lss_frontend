@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
 import { getLatestVersionWLCV } from "../../hooks/hooksWLCV"
 
@@ -129,8 +129,8 @@ const SamsView = () => {
             handleDownloadCV(samsCV)
           }}
           onUpdate={() => navigate("/sams/update-cv")}
-          onSearch={() => console.log("Buscar en CV")}
-          onHistory={() => console.log("Ver histórico CV")}
+          onSearch={() => navigate("/sams/search-cv")}
+          onHistory={() => navigate("/sams/versions-cv")}
         />
 
         {/* Este seria el inicio del componente */}
@@ -178,7 +178,7 @@ const SamsView = () => {
         </div>
         {/* Aqui termina el primer componente */}
       </div>
-      <Outlet/>
+      
     </div>
   )
 }
