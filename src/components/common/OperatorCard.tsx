@@ -1,17 +1,17 @@
-import React from 'react';
+import React from 'react'
 
 interface OperatorCardProps {
-  title: string;
-  lastVersion: string;
-  totalRecords: number;
+  title: string
+  lastVersion: string
+  totalRecords: number
   operators: {
-    label: string;
-    value: number;
-  }[];
-  onDownload?: () => void;
-  onUpdate?: () => void;
-  onSearch?: () => void;
-  onHistory?: () => void;
+    label: string
+    value: number
+  }[]
+  onDownload?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onUpdate?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onSearch?: () => void
+  onHistory?: () => void
 }
 
 const OperatorCard: React.FC<OperatorCardProps> = ({
@@ -24,6 +24,7 @@ const OperatorCard: React.FC<OperatorCardProps> = ({
   onSearch,
   onHistory,
 }) => {
+  
   return (
     <div className="space-y-1 border-2 border-amber-50 p-4 rounded-lg  shadow-sm">
       <h2 className="font-bold text-lg">{title}</h2>
@@ -70,7 +71,7 @@ const OperatorCard: React.FC<OperatorCardProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default OperatorCard;
+export default OperatorCard
