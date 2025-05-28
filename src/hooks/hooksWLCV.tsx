@@ -12,6 +12,17 @@ export const getLatestVersionWLCV = () => {
     },
   })
 }
+export const getSamCVByHexId = (hexId: string) => {
+  console.log(hexId)
+  return useQuery({
+    queryKey: ['samcv'],
+    queryFn: async () => {
+      const response = await apiClient.get(`/whitelist/cv/${hexId}`)
+      console.log(response)
+      return response.data
+    },
+  })
+}
 export const getLatestVersionWL = () => {
   return useQuery({
     queryKey: ['whitelist'],
