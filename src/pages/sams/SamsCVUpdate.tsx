@@ -1,4 +1,4 @@
-import { useUploadCV } from "../../hooks/hooksWLCV"
+import { useUploadCV } from "../../hooks/SamsHooks"
 import LoaderCSV from "../../components/features/LoaderCSV"
 
 

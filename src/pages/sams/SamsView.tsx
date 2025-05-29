@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV } from "../../hooks/hooksWLCV"
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV } from "../../hooks/SamsHooks"
 import { convertToCSV, downloadFile, getCurrentDateTime } from "../../utils/FileHelpers"
 
 const SamsView = () => {
