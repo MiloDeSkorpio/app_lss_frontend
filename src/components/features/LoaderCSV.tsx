@@ -4,19 +4,22 @@ import { useDropzone } from "react-dropzone"
 
 type LoaderCSVProps = {
   uploadMutation: UseMutationResult<any, unknown, FormData>
+  multerOpt: string
+  maxFiles: number
+  multiple: boolean
 }
 type ExtendedFile = File & {
   preview: string
 }
 
-const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
+const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFiles, multiple }) => {
   const [files, setFiles] = useState<ExtendedFile[]>([])
   const handleUpload = () => {
     if (files.length > 0) {
       // Crear FormData y agregar todos los archivos
       const formData = new FormData()
       files.forEach((file) => {
-        formData.append(`csvFiles`, file) // csvFiles es el mismo nombre que se utiliza en el backend desde multer "upload.array('csvFiles')"
+        formData.append(`${multerOpt}`, file) // csvFiles es el mismo nombre que se utiliza en el backend desde multer "upload.array('csvFiles')"
       })
 
       // Usar mutationFn directamente si está configurada para FormData
@@ -35,6 +38,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
       })
     }
   }
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const mappedFiles = acceptedFiles.map((file) =>
       Object.assign(file, {
@@ -52,8 +56,8 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
       "application/vnd.ms-excel": [".csv"], // Para compatibilidad con versiones antiguas
       "text/plain": [".csv"], // Algunos sistemas pueden reportar CSV como text/plain
     },
-    maxFiles: 5,
-    multiple: true,
+    maxFiles: maxFiles,
+    multiple: multiple,
   })
   // Limpia las URLs de vista previa para evitar fugas de memoria
   useEffect(() => {
@@ -66,9 +70,9 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
     const newFiles = [...files]
     URL.revokeObjectURL(newFiles[index].preview)
     newFiles.splice(index, 1)
+    alert('Archivo Eliminado Correctamente')
     setFiles(newFiles)
   }
-
   return (
     <>
       <div
@@ -96,14 +100,14 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
             />
           </svg>
           {isDragActive ? (
-            <p className="text-blue-500">Suelta los archivos aquí...</p>
+            <p className="text-sm text-blue-500">Suelta los archivos aquí...</p>
           ) : (
             <>
-              <p>
-                Arrastra y suelta archivos aquí, o haz clic para seleccionar
+              <p className="text-sm text-gray-500">
+                Arrastra y suelta {maxFiles === 1 ? "el archivo" : "los archivos"} aquí, o haz clic para seleccionar
               </p>
               <p className="text-sm text-gray-500">
-                Formatos aceptados: CSV (Máx. 5 archivos)
+                Formato aceptado: CSV (Máx. {maxFiles} {maxFiles === 1 ? "archivo" : "archivos"})
               </p>
             </>
           )}
@@ -112,7 +116,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation }) => {
 
       {/* Vista previa de archivos */}
       {files.length > 0 && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-2.5">
           <h4 className="text-lg font-medium mb-3">Archivos seleccionados:</h4>
           <ul className="space-y-3">
             {files.map((file, index) => (
