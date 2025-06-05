@@ -29,7 +29,6 @@ export const getLatestVersionWL = () => {
     queryKey: ['whitelist'],
     queryFn: async () => {
       const response = await apiClient.get('/whitelist/last-version')
-      console.log(response)
       return response.data
     },
   })
@@ -39,7 +38,6 @@ export const getLatestVersionInv = () => {
     queryKey: ['inventory'],
     queryFn: async () => {
       const response = await apiClient.get('/sams/all-records')
-      console.log(response)
       return response.data
     },
   })
@@ -48,7 +46,6 @@ export const getLatestVersionInv = () => {
 export const useUploadCV = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      console.log(formData)
       const response = await apiClient.post('/whitelist/new-version-cv', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -61,12 +58,11 @@ export const useUploadCV = () => {
 export const useUploadListCV = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      console.log(formData)
       const response = await apiClient.post('/whitelist/sams-cv', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      })
+      }) 
       return response.data
     }
   })
