@@ -7,4 +7,4 @@ export type SearchResult = {
   ESTACION: string;
   VERSION: string;
   ESTADO: string;
-};
+}
