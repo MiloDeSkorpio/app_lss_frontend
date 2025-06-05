@@ -51,6 +51,7 @@ const SamsView = () => {
     }))
     const hexCSV = convertToCSV(hexOnlyData)
     downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
+    alert('Ultima Version Descargada')
   }
 
   const countOperatorCV = (op: string) =>
