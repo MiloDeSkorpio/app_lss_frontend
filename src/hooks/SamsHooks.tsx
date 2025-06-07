@@ -13,6 +13,17 @@ export const getLatestVersionWLCV = () => {
     },
   })
 }
+
+export const getResumeCV = () => {
+  return useQuery({
+    queryKey: ['resumecv'],
+    queryFn: async () => {
+      const response = await apiClient.get('/whitelist/resume-cv')
+      return response.data
+    },
+  })
+}
+
 export const getSamCVByHexId = (hexId: string) => {
 return useQuery<SearchResult, Error>({
     queryKey: ['samcv', hexId],
@@ -24,6 +35,7 @@ return useQuery<SearchResult, Error>({
     retry: false,
   })
 }
+
 export const getLatestVersionWL = () => {
   return useQuery({
     queryKey: ['whitelist'],
@@ -33,6 +45,7 @@ export const getLatestVersionWL = () => {
     },
   })
 }
+
 export const getLatestVersionInv = () => {
   return useQuery({
     queryKey: ['inventory'],
@@ -42,6 +55,7 @@ export const getLatestVersionInv = () => {
     },
   })
 }
+
 // Ejemplo para enviar datos (POST)
 export const useUploadCV = () => {
   return useMutation({
