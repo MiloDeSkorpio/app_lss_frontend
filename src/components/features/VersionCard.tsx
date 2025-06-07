@@ -1,69 +1,75 @@
-import React from 'react'
+import React from "react"
+import SelectVersion from "../common/SelectVersion"
 
-interface VersionInfo {
-  version: string
-  date: string
-  recordCount: number
+export interface VersionRecords {
+  VERSION: string
 }
-
 interface VersionCardProps {
-  currentVersion: VersionInfo
-  previousVersions: VersionInfo[]
-  selectedVersion: string
-  onVersionChange: (version: string) => void
+  currentVersion: number
+  currentRecordsV: number
+  previousVersions?: VersionRecords[]
   onRestore: () => void
+  onCompare: () => void
 }
 
 const VersionCard: React.FC<VersionCardProps> = ({
   currentVersion,
+  currentRecordsV,
   previousVersions,
-  selectedVersion,
-  onVersionChange,
   onRestore,
+  onCompare,
 }) => {
+
   return (
-    <div className="border-2 border-blue-100 bg-gray-300 p-6 rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4 text-black mt-4">
+    <div className="border-2 border-blue-100 bg-gray-300 p-6 rounded-xl shadow-sm grid grid-cols-1 gap-4 text-black mt-4">
       {/* Columna actual */}
-      <div className="space-y-2">
-        <h2 className="text-lg font-bold text-blue-700">Versión Actual</h2>
-        <p>
-          <span className="font-medium">Versión:</span> {currentVersion.version}
+      <h2 className="text-lg font-bold text-blue-700">Versión Actual</h2>
+      <div className=" flex space-x-2 justify-center items-center">
+        <p className="font-bold">
+          <span className="font-medium">Versión:</span> {currentVersion}
         </p>
-        <p>
-          <span className="font-medium">Fecha:</span> {currentVersion.date}
+        <p className="font-bold">
+          <span className="font-medium">Registros:</span>{" "}
+          {currentRecordsV}
         </p>
-        <p>
-          <span className="font-medium">Registros:</span> {currentVersion.recordCount}
+        <p className="font-bold">
+          <span className="font-medium">Altas:</span> {}
+        </p>
+        <p className="font-bold">
+          <span className="font-medium">Cambios:</span> {}
+        </p>
+        <p className="font-bold">
+          <span className="font-medium">Bajas:</span> {}
         </p>
       </div>
-
       {/* Columna de comparación y acciones */}
-      <div className="space-y-3">
+      <h2 className="text-lg font-bold text-blue-700">Comparar Versiónes</h2>
+      <div className=" flex space-x-3">
         <div>
-          <label htmlFor="versionSelect" className="block text-sm font-medium mb-1">
-            Comparar con versión anterior:
-          </label>
-          <select
-            id="versionSelect"
-            value={selectedVersion}
-            onChange={(e) => onVersionChange(e.target.value)}
-            className="w-full border border-gray-300 rounded-md p-2"
+          <SelectVersion
+            dataVersion={previousVersions}
+            idName="currentVersion"
+          />
+          <button
+            onClick={onCompare}
+            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition"
           >
-            <option value="" disabled>Selecciona una versión</option>
-            {previousVersions.map((ver) => (
-              <option key={ver.version} value={ver.version}>
-                {ver.version} - {ver.date}
-              </option>
-            ))}
-          </select>
+            Comparar versiónes
+          </button>
         </div>
+        <div>
+          <SelectVersion
+            dataVersion={previousVersions}
+            idName="oldVersion"
+          />
 
-        <button
-          onClick={onRestore}
-          className="bg-red-500 text-white w-full py-2 rounded-md hover:bg-red-600 transition"
-        >
-          Restaurar a esta versión
-        </button>
+          <button
+            onClick={onRestore}
+            className="bg-red-500 text-white w-full py-2 rounded-md hover:bg-red-600 transition"
+          >
+            Restaurar a esta versión
+          </button>
+        </div>
       </div>
     </div>
   )
