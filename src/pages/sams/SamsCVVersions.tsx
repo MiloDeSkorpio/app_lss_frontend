@@ -12,6 +12,9 @@ const SamsCVVersions = () => {
         currentVersion={data?.currentVersion}
         currentRecordsV={data?.totalRecords}
         previousVersions={data?.versions}
+        altasRecords={data?.altasDataV}
+        bajasRecords={data?.bajasDataV}
+        cambiosRecords={data?.cambiosDataV}
         onRestore={() => console.log("Restaurar versión")}
         onCompare={() => console.log("Comparando versión")}
       />
