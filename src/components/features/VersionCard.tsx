@@ -8,6 +8,9 @@ interface VersionCardProps {
   currentVersion: number
   currentRecordsV: number
   previousVersions?: VersionRecords[]
+  altasRecords?: number
+  bajasRecords?: number
+  cambiosRecords?: number
   onRestore: () => void
   onCompare: () => void
 }
@@ -16,6 +19,9 @@ const VersionCard: React.FC<VersionCardProps> = ({
   currentVersion,
   currentRecordsV,
   previousVersions,
+  altasRecords,
+  bajasRecords,
+  cambiosRecords,
   onRestore,
   onCompare,
 }) => {
@@ -33,13 +39,13 @@ const VersionCard: React.FC<VersionCardProps> = ({
           {currentRecordsV}
         </p>
         <p className="font-bold">
-          <span className="font-medium">Altas:</span> {}
+          <span className="font-medium">Altas:</span> {altasRecords}
         </p>
         <p className="font-bold">
-          <span className="font-medium">Cambios:</span> {}
+          <span className="font-medium">Cambios:</span> {cambiosRecords}
         </p>
         <p className="font-bold">
-          <span className="font-medium">Bajas:</span> {}
+          <span className="font-medium">Bajas:</span> {bajasRecords}
         </p>
       </div>
       {/* Columna de comparación y acciones */}
