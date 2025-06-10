@@ -1,22 +1,23 @@
-import { useState, type FC } from "react"
+import { type FC } from "react"
 import type { VersionRecords } from "../features/VersionCard"
 
 interface SelectVersionProps {
   dataVersion?: VersionRecords[]
   idName: string
+  value: number
+  disabled: boolean
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
-const SelectVersion: FC<SelectVersionProps> = ({ dataVersion, idName }) => {
-  const [selectedVersion, setSelectedVersion] = useState("")
-  const handleVersionChange = (version: React.SetStateAction<string>) => {
-    setSelectedVersion(version) 
-  }
+const SelectVersion: FC<SelectVersionProps> = ({ dataVersion, idName, value,onChange, disabled }) => {
+
   return (
     <>
       <select
         id={idName}
-        value={selectedVersion}
-        onChange={(e) => handleVersionChange(e.target.value)}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
         className="w-full border border-gray-300 rounded-md p-2"
       >
         <option value="">Selecciona una versión</option>
