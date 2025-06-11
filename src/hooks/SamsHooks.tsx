@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
-import type { SearchResult } from '../types.ts'
+import type { CompareVersionsParams, SearchResult } from '../types.ts'
 
 
 // Ejemplo para obtener datos (GET)
@@ -77,6 +77,24 @@ export const useUploadListCV = () => {
           'Content-Type': 'multipart/form-data',
         },
       }) 
+      return response.data
+    }
+  })
+}
+export const useCompareVersions = () => {
+  return useMutation({
+    mutationFn: async ({ currentVers, oldVersion}: CompareVersionsParams) => {
+      const payload = {
+        currentVersion: currentVers,
+        oldVersion: oldVersion
+      }
+      
+      const response = await apiClient.post('/whitelist/compare-versions', payload, {
+        headers: {
+          'Content-Type': 'application/json', // Cambiado a JSON ya que parece que solo envías IDs
+        },
+      })
+      
       return response.data
     }
   })
