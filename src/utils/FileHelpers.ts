@@ -1,3 +1,5 @@
+import { notify } from "./notifications"
+
 /**
  * Descarga un archivo en el navegador utilizando un objeto Blob.
  *
@@ -76,3 +78,47 @@ export const getCurrentDateTime = () => {
   return `${year}${month}${day}_${hours}${minutes}${seconds}`
 }
 
+/**
+ * Realiza la descarga de los archivos para WL (CV y CL)`.
+ *
+ * @returns 3 Archivos de generacion de WL.
+ *
+ * @example
+ * const timestamp = getCurrentDateTime();
+ * // Resultado: '20250522_143015'
+ */
+export const handleDownloadWL = ( data: any ) => {
+  const dateTime = getCurrentDateTime()
+      
+      // 1. Archivo completo
+      const allData = data.map((item: any) => ({
+        serial_dec: item.serial_dec,
+        serial_hex: item.serial_hex,
+        config: item.config,
+        operator: item.operator,
+        location_id: item.location_id,
+        estacion: item.estacion,
+      }))
+      const fullCSV = convertToCSV(allData)
+      downloadFile(fullCSV, `${dateTime}_listablanca_cv_all.csv`, "text/csv")
+  
+      // 2. Archivo solo con serial_dec y serial_hex
+      const serialData = data.map((item: any) => ({
+        serial_dec: item.serial_dec,
+        serial_hex: item.serial_hex,
+      }))
+      const serialCSV = convertToCSV(serialData)
+      downloadFile(
+        serialCSV,
+        `${dateTime}_listablanca_cv_partial.csv`,
+        "text/csv"
+      )
+  
+      // 3. Archivo solo con serial_hex
+      const hexOnlyData = data.map((item: any) => ({
+        serial_hex: item.serial_hex,
+      }))
+      const hexCSV = convertToCSV(hexOnlyData)
+      downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
+      notify.success('Descarga Exitosa!')
+}

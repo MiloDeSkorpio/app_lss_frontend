@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV } from "../../hooks/SamsHooks"
-import { convertToCSV, downloadFile, getCurrentDateTime } from "../../utils/FileHelpers"
+import {  handleDownloadWL } from "../../utils/FileHelpers"
 
 const SamsView = () => {
   const navigate = useNavigate()
@@ -18,42 +18,7 @@ const SamsView = () => {
   const totalSAMSInv = samsInv?.length || 0
   const lastFecha = samsInv?.[0]?.fecha_produccion || "N/A"
 
-  const handleDownloadCV = (samsCV: any) => {
-    const dateTime = getCurrentDateTime()
-    
-    // 1. Archivo completo
-    const allSamsCV = samsCV.map((item: any) => ({
-      serial_dec: item.serial_dec,
-      serial_hex: item.serial_hex,
-      config: item.config,
-      operator: item.operator,
-      location_id: item.location_id,
-      estacion: item.estacion,
-    }))
-    const fullCSV = convertToCSV(allSamsCV)
-    downloadFile(fullCSV, `${dateTime}_listablanca_cv_all.csv`, "text/csv")
-
-    // 2. Archivo solo con serial_dec y serial_hex
-    const serialData = samsCV.map((item: any) => ({
-      serial_dec: item.serial_dec,
-      serial_hex: item.serial_hex,
-    }))
-    const serialCSV = convertToCSV(serialData)
-    downloadFile(
-      serialCSV,
-      `${dateTime}_listablanca_cv_partial.csv`,
-      "text/csv"
-    )
-
-    // 3. Archivo solo con serial_hex
-    const hexOnlyData = samsCV.map((item: any) => ({
-      serial_hex: item.serial_hex,
-    }))
-    const hexCSV = convertToCSV(hexOnlyData)
-    downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
-    alert('Ultima Version Descargada')
-  }
-
+  
   const countOperatorCV = (op: string) =>
     samsCV?.filter((s: { operator: string }) => s.operator === op).length || 0
   const countOperator = (op: string) =>
@@ -90,7 +55,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadCV(samsCV)
+            handleDownloadWL(samsCV)
           }}
           onUpdate={() => navigate("/sams/update-cv")}
           onSearch={() => navigate("/sams/search-cv")}
@@ -119,7 +84,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadCV(samsWL)
+            handleDownloadWL(samsWL)
           }}
           onUpdate={() => navigate("/sams/update")}
           onSearch={() => navigate("/sams/search")}
@@ -148,7 +113,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadCV(samsWL)
+            handleDownloadWL(samsWL)
           }}
           onUpdate={() => navigate("/sams/update")}
           onSearch={() => navigate("/sams/search")}
