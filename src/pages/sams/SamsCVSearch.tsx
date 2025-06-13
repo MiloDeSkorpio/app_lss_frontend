@@ -3,6 +3,7 @@ import Search from "../../components/features/Search"
 import { getSamCVByHexId, useUploadListCV } from "../../hooks/SamsHooks"
 import LoaderCSV from "../../components/features/LoaderCSV"
 import { useQueryClient } from "@tanstack/react-query"
+import { notify } from "../../utils/notifications"
 
 const SamsCVSearch = () => {
   const queryClient = useQueryClient()
@@ -46,14 +47,13 @@ const SamsCVSearch = () => {
   const handleSearch = () => {
     const hexRegex = /^[0-9A-F]{8}$/
     if (!searchTerm) {
-      alert("Ingresa un código hexadecimal.")
+      notify.warning("Ingresa un código hexadecimal.")
       return
     }
 
     if (!hexRegex.test(searchTerm)) {
-      alert(
-        "Formato inválido. Debe ser 8 caracteres (ej: AE10D275, AE10D276)."
-      )
+      notify.error("Formato inválido. Debe ser 8 caracteres (ej: AE10D275, AE10D276).")
+      
       return
     }
 
