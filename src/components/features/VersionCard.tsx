@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react"
 import SelectVersion from "../common/SelectVersion"
+import Search from "./Search"
+import { useCompareVersions } from "../../hooks/SamsHooks"
+import type { VersionRecords } from "../../types"
 
-export interface VersionRecords {
-  VERSION: string
-}
 
 interface VersionCardProps {
   currentVersion: number
@@ -41,6 +41,32 @@ const VersionCard: React.FC<VersionCardProps> = ({
 
   const isCompareDisabled = !currentVers || !oldVersion
   const isRestoreDisabled = !oldVersion
+  const { mutate: compareVersions, error, data } = useCompareVersions()
+
+  const handleCompare = () => {
+    if (!currentVers || !oldVersion) {
+      alert("Por favor selecciona ambas versiones")
+      return
+    }
+
+    compareVersions({
+      currentVers,
+      oldVersion,
+    })
+  }
+  // Función de limpieza universal
+    const handleClean = () => {
+      // if(singleData) {
+      //   queryClient.removeQueries({
+      //     queryKey: ["samcv", activeSearchTerm], // Usa tus mismos queryKeys
+      //   })
+      //   setActiveSearchTerm("")
+      //   setSearchTerm("")
+      // }
+      if (data) {
+        data.reset() // Limpia datos de mutación
+      }
+    }
   return (
     <div className="border-2 border-blue-100 bg-gray-300 p-6 rounded-xl shadow-sm grid grid-cols-1 gap-4 text-black mt-4">
       {/* Columna actual */}
@@ -68,7 +94,7 @@ const VersionCard: React.FC<VersionCardProps> = ({
       </div>
       {/* Columna de comparación y acciones */}
       <h2 className="text-lg font-bold text-blue-700">Comparar Versiónes</h2>
-      <div className=" flex space-x-3">
+      <div className=" flex space-x-3 items-center justify-center">
         <div>
           <SelectVersion
             dataVersion={previousVersions}
@@ -78,7 +104,7 @@ const VersionCard: React.FC<VersionCardProps> = ({
             disabled={false}
           />
           <button
-            onClick={onCompare}
+            onClick={handleCompare}
             disabled={isCompareDisabled}
             className={`bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition ${
               isCompareDisabled ? "opacity-50 cursor-not-allowed" : ""
@@ -107,6 +133,25 @@ const VersionCard: React.FC<VersionCardProps> = ({
           </button>
         </div>
       </div>
+      {data ? (
+        <div>
+        <h2 className="text-lg font-bold text-blue-700">Altas: {data.altasRes}</h2>
+        <div className="space-y-2">
+          <Search  data={data.altasData} isLoading={false} error={error} onClean={handleClean} />
+        </div>
+        <h2 className="text-lg font-bold text-blue-700">Bajas: {data.bajasRes}</h2>
+        <div className="space-y-2">
+          <Search  data={data.bajasData} isLoading={false} error={error} onClean={handleClean} />
+        </div>
+        <h2 className="text-lg font-bold text-blue-700">Cambios: {data.cambiosRes}</h2>
+        <div className="space-y-2">
+          <Search  data={data.cambiosData} isLoading={false} error={error} onClean={handleClean} />
+        </div>
+        
+        </div>
+      ) : (
+        "En espera de resultados..."
+      )}
     </div>
   )
 }

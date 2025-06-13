@@ -1,6 +1,7 @@
 import type { UseMutationResult } from "@tanstack/react-query"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
+import { notify } from "../../utils/notifications"
 
 type LoaderCSVProps = {
   uploadMutation: UseMutationResult<any, unknown, FormData>
@@ -25,11 +26,11 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
       // Usar mutationFn directamente si está configurada para FormData
       uploadMutation.mutate(formData, {
         onSuccess: () => {
-          alert(`${files.length} archivo(s) subido(s) correctamente`)
+          notify.success(`${files.length} archivo(s) subido(s) correctamente`)
           setFiles([])
         },
         onError: (error) => {
-          alert(
+          notify.error(
             `Error al subir archivos: ${
               error instanceof Error ? error.message : "Error desconocido"
             }`
@@ -70,7 +71,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
     const newFiles = [...files]
     URL.revokeObjectURL(newFiles[index].preview)
     newFiles.splice(index, 1)
-    alert('Archivo Eliminado Correctamente')
+    notify.success('Archivo Eliminado Correctamente')
     setFiles(newFiles)
   }
   return (
