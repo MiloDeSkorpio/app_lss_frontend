@@ -1,3 +1,18 @@
+/**
+ * Valores disponibles para el campo ESTADO en modelos con altas y bajas
+ */
+type VersionStatus = 'ACTIVO' | 'INACTIVO'
+/**
+ * Representa el resultado de búsqueda de un registro de WL en el sistema
+ * @property SERIAL_DEC - Número de serie en formato decimal
+ * @property SERIAL_HEX - Número de serie en formato hexadecimal
+ * @property CONFIG - Configuracion del registro de WL
+ * @property OPERATOR - Provider Code el organismo
+ * @property LOCATION_ID - Nomenclatura de ubicacion del registro 
+ * @property ESTACION - Estacion dentro de la Linea del organismo
+ * @property VERSION - Version del registro
+ * @property ESTADO - Estado actual del registro de WL (ACTIVO/INACTIVO)
+ */
 export type SearchResult = {
   SERIAL_DEC: number
   SERIAL_HEX: string
@@ -5,10 +20,22 @@ export type SearchResult = {
   OPERATOR: string
   LOCATION_ID: string
   ESTACION: string
-  VERSION: string
-  ESTADO: string
+  VERSION: number
+  ESTADO: VersionStatus
 }
+/**
+ * Valores disponibles para el campo ESTADO en modelos con altas y bajas
+ * @property currentVers - version actual o más reciente 
+ * @property oldVersion - version menor a la version actual
+ */
 export interface CompareVersionsParams {
   currentVers: number
   oldVersion: number
+}
+/**
+ * Disponible para llenar los selects con las versiones disponibles segun el modelo
+  * @property VERSION - valor de la version
+ */
+export interface VersionRecords {
+  VERSION: string
 }
