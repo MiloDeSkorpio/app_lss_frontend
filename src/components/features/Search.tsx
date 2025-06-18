@@ -1,20 +1,29 @@
 import type { SearchResult } from "../../types"
-import { notify } from "../../utils/notifications"
 
 interface ResComponentsProps {
   data?: SearchResult | SearchResult[]
   isLoading: boolean
   error: Error | null
   onClean: () => void
+  showAllFields?: boolean // Nuevo prop para controlar los campos
 }
 
-const Search = ({ data, isLoading, error, onClean }: ResComponentsProps) => {
+const Search = ({
+  data,
+  isLoading,
+  error,
+  showAllFields = true,
+}: ResComponentsProps) => {
   const results = Array.isArray(data) ? data : data ? [data] : []
 
-  const handleClean = () => {
-    onClean()
-    notify.success("Limpieza Exitosa...")
-  }
+  // Configuración dinámica de columnas
+  const columns = [
+    { key: "SERIAL_HEX", label: "Serial HEX", show: true },
+    { key: "OPERATOR", label: "Operador", show: true },
+    { key: "LOCATION_ID", label: "Location ID", show: showAllFields },
+    { key: "ESTACION", label: "Estación", show: showAllFields },
+    { key: "ESTADO", label: "Estado", show: showAllFields },
+  ]
 
   if (isLoading) {
     return <p className="text-gray-500 text-center mt-6">Buscando...</p>
@@ -26,67 +35,59 @@ const Search = ({ data, isLoading, error, onClean }: ResComponentsProps) => {
     )
   }
 
-  if (!results) {
+  if (!results.length) {
     return (
-      <p className="text-gray-400 text-center mt-6">No hay resultados aún.</p>
+      <p className="text-gray-600 text-center mt-6 p-2">No hay resultados.</p>
     )
   }
 
   return (
-    <>
-      <div className="border rounded mt-4 h-[250px] overflow-auto">
-        <div className="min-w-full inline-block">
-          <table className="min-w-full">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Serial HEX
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Operador
-                </th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Location ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Estación
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Estado
-                </th> */}
+    <div
+      className={`border rounded mt-4 max-h-[250px] overflow-auto ${
+        showAllFields ? "min-w-full" : "w-[250px]"
+      }`}
+    >
+      <div className="inline-block min-w-full">
+        <table className="min-w-full">
+          <thead className="bg-gray-100 sticky top-0">
+            <tr>
+              {columns.map(
+                (column) =>
+                  column.show && (
+                    <th
+                      key={column.key}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
+                    >
+                      {column.label}
+                    </th>
+                  )
+              )}
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {results.map((item, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                {columns.map(
+                  (column) =>
+                    column.show && (
+                      <td
+                        key={`${index}-${column.key}`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          column.key === "SERIAL_HEX"
+                            ? "text-black"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {item[column.key as keyof SearchResult]}
+                      </td>
+                    )
+                )}
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {results.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                    {item.SERIAL_HEX}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.OPERATOR}
-                  </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.LOCATION_ID}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.ESTACION}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.ESTADO}
-                  </td> */}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <button
-        onClick={handleClean}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
-      >
-        Limpiar Busqueda
-      </button>
-    </>
+    </div>
   )
 }
 
