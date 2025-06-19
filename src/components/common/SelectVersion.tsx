@@ -1,5 +1,5 @@
 import { type FC } from "react"
-import type { VersionRecords } from "../features/VersionCard"
+import type { VersionRecords } from "../../types"
 
 interface SelectVersionProps {
   dataVersion?: VersionRecords[]
@@ -18,7 +18,7 @@ const SelectVersion: FC<SelectVersionProps> = ({ dataVersion, idName, value,onCh
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className="w-full border border-gray-300 rounded-md p-2"
+        className="w-[220px] border border-gray-500 rounded-md p-2 disabled:border-gray-400 disabled:text-gray-400"
       >
         <option value="">Selecciona una versión</option>
         {dataVersion?.map((ver) => (
