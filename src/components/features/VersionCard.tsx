@@ -4,7 +4,6 @@ import Search from "./Search"
 import { useCompareVersions } from "../../hooks/SamsHooks"
 import type { VersionRecords } from "../../types"
 
-
 interface VersionCardProps {
   currentVersion: number
   currentRecordsV: number
@@ -12,8 +11,6 @@ interface VersionCardProps {
   altasRecords?: number
   bajasRecords?: number
   cambiosRecords?: number
-  onRestore: () => void
-  onCompare: () => void
 }
 
 const VersionCard: React.FC<VersionCardProps> = ({
@@ -23,50 +20,58 @@ const VersionCard: React.FC<VersionCardProps> = ({
   altasRecords,
   bajasRecords,
   cambiosRecords,
-  onRestore,
-  onCompare,
 }: VersionCardProps) => {
   const [currentVers, setCurrentVersion] = useState<number | null>(null)
   const [oldVersion, setOldVersion] = useState<number | null>(null)
+  const [downloadSucces, setDownloadSuccess] = useState(false)
+  const { mutate: compareVersions, error, data, reset } = useCompareVersions()
 
+  const selectOldDisabled = !currentVers || data
+  const selectCurDisabled = data
+  const isCompareDisabled = !currentVers || !oldVersion || data
+  const isRestoreDisabled = !downloadSucces
+  const isCleanDisabled = !data
+  const isDownloadDisabled = !data || downloadSucces
+  
   const filteredOldVersions = useMemo(() => {
     if (!currentVers) return []
     return previousVersions.filter((v) => Number(v.VERSION) < currentVers)
   }, [currentVers, previousVersions])
 
-  // Efecto solo para resetear oldVersion
   useEffect(() => {
     setOldVersion(null)
   }, [currentVers])
-
-  const isCompareDisabled = !currentVers || !oldVersion
-  const isRestoreDisabled = !oldVersion
-  const { mutate: compareVersions, error, data } = useCompareVersions()
 
   const handleCompare = () => {
     if (!currentVers || !oldVersion) {
       alert("Por favor selecciona ambas versiones")
       return
     }
-
     compareVersions({
       currentVers,
       oldVersion,
     })
   }
-  // Función de limpieza universal
-    const handleClean = () => {
-      // if(singleData) {
-      //   queryClient.removeQueries({
-      //     queryKey: ["samcv", activeSearchTerm], // Usa tus mismos queryKeys
-      //   })
-      //   setActiveSearchTerm("")
-      //   setSearchTerm("")
-      // }
-      if (data) {
-        data.reset() // Limpia datos de mutación
-      }
+
+  const handleClean = () => {
+    if (data) {
+      setCurrentVersion(null)
+      setOldVersion(null)
+      setDownloadSuccess(false)
+      reset()
     }
+  }
+
+  const handleRestore = () => {
+    console.log("Restaurnado la version Seleccionada")
+  }
+
+  const handleDownload = () => {
+    console.log("descargando las diferencias entre versiones")
+    setDownloadSuccess(true)
+    console.log(downloadSucces)
+  }
+  
   return (
     <div className="border-2 border-blue-100 bg-gray-300 p-6 rounded-xl shadow-sm grid grid-cols-1 gap-4 text-black mt-4">
       {/* Columna actual */}
@@ -94,60 +99,94 @@ const VersionCard: React.FC<VersionCardProps> = ({
       </div>
       {/* Columna de comparación y acciones */}
       <h2 className="text-lg font-bold text-blue-700">Comparar Versiónes</h2>
-      <div className=" flex space-x-3 items-center justify-center">
-        <div>
+      <div className="space-y-3 items-center justify-center">
+        <div className="space-x-2">
           <SelectVersion
             dataVersion={previousVersions}
             idName="currentVersion"
             value={Number(currentVers)}
             onChange={(e) => setCurrentVersion(Number(e.target.value))}
-            disabled={false}
+            disabled={selectCurDisabled}
           />
-          <button
-            onClick={handleCompare}
-            disabled={isCompareDisabled}
-            className={`bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition ${
-              isCompareDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Comparar versiónes
-          </button>
-        </div>
-        <div>
           <SelectVersion
             dataVersion={filteredOldVersions}
             value={Number(oldVersion)}
             onChange={(e) => setOldVersion(Number(e.target.value))}
-            disabled={!currentVers}
+            disabled={selectOldDisabled}
             idName="oldVersion"
           />
-
+        </div>
+        <div className="space-x-2">
           <button
-            onClick={onRestore}
-            disabled={isRestoreDisabled}
-            className={`bg-red-500 text-white w-full py-2 rounded-md hover:bg-red-600 transition ${
-              isRestoreDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            onClick={handleClean}
+            className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300 ${isCleanDisabled ? "hidden" : ""
+              }`}
           >
-            Restaurar a esta versión
+            Limpiar Busqueda
+          </button>
+          <button
+            onClick={handleDownload}
+            className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:bg-green-300 ${isDownloadDisabled ? "hidden" : ""
+              }`}
+          >
+            Descargar
+          </button>
+          <button
+            onClick={handleCompare}
+            className={`bg-blue-500 text-white w-[220px] py-2 rounded-md hover:bg-blue-600 transition ${isCompareDisabled ? "hidden" : ""
+              }`}
+          >
+            Comparar versiónes
+          </button>
+          <button
+            onClick={handleRestore}
+            className={`bg-red-500 text-white w-[220px] py-2 rounded-md hover:bg-red-600 transition ${isRestoreDisabled ? "hidden" : ""
+              }`}
+          >
+            Restaurar a la version: {oldVersion}
           </button>
         </div>
       </div>
       {data ? (
-        <div>
-        <h2 className="text-lg font-bold text-blue-700">Altas: {data.altasRes}</h2>
-        <div className="space-y-2">
-          <Search  data={data.altasData} isLoading={false} error={error} onClean={handleClean} />
-        </div>
-        <h2 className="text-lg font-bold text-blue-700">Bajas: {data.bajasRes}</h2>
-        <div className="space-y-2">
-          <Search  data={data.bajasData} isLoading={false} error={error} onClean={handleClean} />
-        </div>
-        <h2 className="text-lg font-bold text-blue-700">Cambios: {data.cambiosRes}</h2>
-        <div className="space-y-2">
-          <Search  data={data.cambiosData} isLoading={false} error={error} onClean={handleClean} />
-        </div>
-        
+        <div className=" space-y-1 ">
+          <div className="flex space-x-1">
+            <div className="space-y-2">
+              <h2 className="text-lg font-bold text-blue-700">
+                Altas: {data.altasRes}
+              </h2>
+              <Search
+                data={data.altasData}
+                isLoading={false}
+                error={error}
+                onClean={handleClean}
+                showAllFields={false}
+              />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-bold text-blue-700">
+                Bajas: {data.bajasRes}
+              </h2>
+              <Search
+                data={data.bajasData}
+                isLoading={false}
+                error={error}
+                onClean={handleClean}
+                showAllFields={false}
+              />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-bold text-blue-700">
+                Cambios: {data.cambiosRes}
+              </h2>
+              <Search
+                data={data.cambiosData}
+                isLoading={false}
+                error={error}
+                onClean={handleClean}
+                showAllFields={false}
+              />
+            </div>
+          </div>
         </div>
       ) : (
         "En espera de resultados..."
