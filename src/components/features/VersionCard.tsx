@@ -3,6 +3,7 @@ import SelectVersion from "../common/SelectVersion"
 import Search from "./Search"
 import { useCompareVersions } from "../../hooks/SamsHooks"
 import type { VersionRecords } from "../../types"
+import { handleDownloadFileEvent } from "../../utils/FileHelpers"
 
 interface VersionCardProps {
   currentVersion: number
@@ -63,15 +64,16 @@ const VersionCard: React.FC<VersionCardProps> = ({
   }
 
   const handleRestore = () => {
-    console.log("Restaurnado la version Seleccionada")
+    console.log("Restaurnado la version Seleccionada",oldVersion)
   }
 
   const handleDownload = () => {
-    console.log("descargando las diferencias entre versiones")
+    handleDownloadFileEvent(data.altasData,`listablanca_cv_altas_${currentVers}_to_${oldVersion}.csv`)
+    handleDownloadFileEvent(data.cambiosData,`listablanca_cv_cambios_${currentVers}_to_${oldVersion}.csv`)
+    handleDownloadFileEvent(data.bajasData,`listablanca_cv_bajas_${currentVers}_to_${oldVersion}.csv`)
     setDownloadSuccess(true)
-    console.log(downloadSucces)
   }
-  
+
   return (
     <div className="border-2 border-blue-100 bg-gray-300 p-6 rounded-xl shadow-sm grid grid-cols-1 gap-4 text-black mt-4">
       {/* Columna actual */}
