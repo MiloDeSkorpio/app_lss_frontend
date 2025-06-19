@@ -84,8 +84,7 @@ export const getCurrentDateTime = () => {
  * @returns 3 Archivos de generacion de WL.
  *
  * @example
- * const timestamp = getCurrentDateTime();
- * // Resultado: '20250522_143015'
+ * 20250619_144020_listablanca_cv_all.csv
  */
 export const handleDownloadWL = ( data: any ) => {
   const dateTime = getCurrentDateTime()
@@ -121,4 +120,18 @@ export const handleDownloadWL = ( data: any ) => {
       const hexCSV = convertToCSV(hexOnlyData)
       downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
       notify.success('Descarga Exitosa!')
+}
+/**
+ * Realiza la descarga de os archivos para WL (CV y CL)`.
+ *
+ * @returns 1 Archivo CSV con todos los registros de (ALTAS | BAJAS | CAMBIOS) que sean diferentes entre una version reciente y una anterior a la reciente.
+ *
+ * @example
+ * "listablanca_cambios_35_to_30.csv"
+ */
+export const handleDownloadFileEvent = (data: any, fileName: string) =>{
+  const dataFile = data.map((item: any) => ({ ...item }))
+  const eventCSV = convertToCSV(dataFile)
+  downloadFile(eventCSV,fileName,"text/csv")
+  notify.success(`Descarga de ${fileName} con exito!`)
 }
