@@ -28,7 +28,7 @@ export type SearchResult = {
  * @property currentVers - version actual o más reciente 
  * @property oldVersion - version menor a la version actual
  */
-export interface CompareVersionsParams {
+export interface VersionsParams {
   currentVers: number
   oldVersion: number
 }
