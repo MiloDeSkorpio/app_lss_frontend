@@ -23,6 +23,15 @@ export const getResumeCV = () => {
     },
   })
 }
+export const getResume = () => {
+  return useQuery({
+    queryKey: ['resumecv'],
+    queryFn: async () => {
+      const response = await apiClient.get('/whitelist/resume')
+      return response.data
+    },
+  })
+}
 
 export const getSamCVByHexId = (hexId: string) => {
 return useQuery<SearchResult, Error>({
