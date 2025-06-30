@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
-import type { CompareVersionsParams, SearchResult } from '../types.ts'
+import type { SearchResult, VersionsParams } from '../types.ts'
 
 
 // Ejemplo para obtener datos (GET)
@@ -81,20 +81,35 @@ export const useUploadListCV = () => {
     }
   })
 }
-export const useCompareVersions = () => {
+export const useCompareVersionsCV = () => {
   return useMutation({
-    mutationFn: async ({ currentVers, oldVersion}: CompareVersionsParams) => {
+    mutationFn: async ({ currentVers, oldVersion}: VersionsParams) => {
       const payload = {
         currentVersion: currentVers,
         oldVersion: oldVersion
       }
       
-      const response = await apiClient.post('/whitelist/compare-versions', payload, {
+      const response = await apiClient.post('/whitelist/compare-cv-versions', payload, {
         headers: {
           'Content-Type': 'application/json', // Cambiado a JSON ya que parece que solo envías IDs
         },
       })
+      return response.data
+    }
+  })
+}
+export const useRestoreVersionCV = () => {
+  return useMutation({
+    mutationFn: async ( oldVersion: number) => {
+      const payload = {
+        oldVersion: oldVersion
+      }
       
+      const response = await apiClient.post('/whitelist/restore-version-cv', payload, {
+        headers: {
+          'Content-Type': 'application/json', // Cambiado a JSON ya que parece que solo envías IDs
+        },
+      })
       return response.data
     }
   })
