@@ -8,6 +8,7 @@ import SecurityView from './pages/SecurityView'
 import SamsCVUpdate from './pages/sams/SamsCVUpdate'
 import SamsCVSearch from './pages/sams/SamsCVSearch'
 import SamsCVVersions from './pages/sams/SamsCVVersions'
+import SamsSearch from './pages/sams/SamsSearch'
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "sams/search-cv",
     element: <SamsCVSearch />,
+  },
+  {
+    path: "sams/search",
+    element: <SamsSearch />,
   },
   {
     path: "sams/versions-cv",
