@@ -27,8 +27,8 @@ export const downloadFile = (data: string, filename: string, type: string) => {
  * @returns Una cadena en formato CSV que incluye encabezados y filas separadas por comas.
  *
  * @example
- * const data = [{ name: "Ana", age: 30 }, { name: "Luis", age: 25 }];
- * const csv = convertToCSV(data);
+ * const data = [{ name: "Ana", age: 30 }, { name: "Luis", age: 25 }]
+ * const csv = convertToCSV(data)
  * // Resultado:
  * // name,age
  * // Ana,30
@@ -61,7 +61,7 @@ export  const convertToCSV = (objArray: any[]) => {
  * @returns Una cadena con la fecha y hora actual.
  *
  * @example
- * const timestamp = getCurrentDateTime();
+ * const timestamp = getCurrentDateTime()
  * // Resultado: '20250522_143015'
  */
 export const getCurrentDateTime = () => {
@@ -79,12 +79,45 @@ export const getCurrentDateTime = () => {
 }
 
 /**
- * Realiza la descarga de los archivos para WL (CV y CL)`.
- *
- * @returns 3 Archivos de generacion de WL.
- *
- * @example
- * 20250619_144020_listablanca_cv_all.csv
+ * Genera y descarga tres archivos CSV con diferentes conjuntos de datos de la Whitelist:
+ * 1. Dataset completo, 2. Solo seriales (dec/hex), 3. Solo seriales hexadecimales.
+ * 
+ * @export
+ * @function handleDownloadWL
+ * @param {Array<Object>} data - Datos originales de la Whitelist (array de objetos).
+ * @returns {void} Efectos secundarios:
+ *   - Descarga 3 archivos CSV con prefijo de timestamp.
+ *   - Muestra notificación de éxito.
+ * 
+ * @throws {Error} Si:
+ *   - `data` no es un array.
+ *   - Fallo en la conversión CSV.
+ *   - Error durante la descarga.
+ * 
+ * @example <caption>Descarga desde datos de Whitelist</caption>
+ * const whitelistData = [
+ *   {
+ *     serial_dec: "12345",
+ *     serial_hex: "3039",
+ *     config: "A1B2",
+ *     operator: "Operador X",
+ *     location_id: "LOC-001",
+ *     estacion: "EST-1"
+ *   }
+ * ];
+ * handleDownloadWL(whitelistData);
+ * // Descarga:
+ * // - YYYYMMDD_HHMMSS_listablanca_cv_all.csv (dataset completo)
+ * // - YYYYMMDD_HHMMSS_listablanca_cv_partial.csv (solo seriales)
+ * // - YYYYMMDD_HHMMSS_listablanca_cv.csv (solo hex)
+ * 
+ * @example <caption>Manejo de errores</caption>
+ * try {
+ *   handleDownloadWL(null);
+ * } catch (error) {
+ *   console.error("Error en descarga:", error.message);
+ *   notify.error("Falló la generación de archivos");
+ * }
  */
 export const handleDownloadWL = ( data: any ) => {
   const dateTime = getCurrentDateTime()
@@ -122,16 +155,74 @@ export const handleDownloadWL = ( data: any ) => {
       notify.success('Descarga Exitosa!')
 }
 /**
- * Realiza la descarga de os archivos para WL (CV y CL)`.
- *
- * @returns 1 Archivo CSV con todos los registros de (ALTAS | BAJAS | CAMBIOS) que sean diferentes entre una version reciente y una anterior a la reciente.
- *
- * @example
- * "listablanca_cambios_35_to_30.csv"
+ * Convierte datos a formato CSV, los descarga como archivo y notifica el éxito.
+ * 
+ * @export
+ * @function handleDownloadFileEvent
+ * @param {Array<Object>} data - Datos a convertir (array de objetos).
+ * @param {string} fileName - Nombre del archivo destino (ej: "reporte.csv").
+ * @returns {void} No retorna valor, genera efectos secundarios:
+ *   1. Crea un CSV con los datos clonados.
+ *   2. Dispara descarga automática en el navegador.
+ *   3. Muestra notificación de éxito.
+ * 
+ * @throws {Error} Si:
+ *   - `data` no es un array.
+ *   - `fileName` no es una cadena válida.
+ *   - Fallo en la conversión CSV o descarga.
+ * 
+ * @example <caption>Descarga datos simples</caption>
+ * handleDownloadFileEvent(
+ *   [{ id: 1, name: "Ejemplo" }],
+ *   "ejemplo.csv"
+ * )
+ * // Resultado: Descarga "ejemplo.csv" y muestra notificación.
+ * 
+ * @example <caption>Manejo de errores</caption>
+ * try {
+ *   handleDownloadFileEvent(null, "error.csv")
+ * } catch (error) {
+ *   console.error("Falló la descarga:", error.message)
+ * }
  */
 export const handleDownloadFileEvent = (data: any, fileName: string) =>{
   const dataFile = data.map((item: any) => ({ ...item }))
   const eventCSV = convertToCSV(dataFile)
   downloadFile(eventCSV,fileName,"text/csv")
   notify.success(`Descarga de ${fileName} con exito!`)
+}
+/**
+ * Maneja la descarga de un archivo si el array de datos no está vacío,
+ * de lo contrario muestra un mensaje informativo.
+ * 
+ * @function handleDownloadIfData
+ * @param {Array<any>} dataArray - Array de datos que se evaluará para descargar.
+ * @param {string} fileName - Nombre del archivo a generar (incluyendo extensión).
+ * @param {string} message - Mensaje a mostrar si no hay datos para descargar.
+ * @returns {void} No retorna ningún valor (solo ejecuta efectos secundarios).
+ *
+ * @example
+ * // Ejemplo 1: Con datos disponibles
+ * handleDownloadIfData(
+ *   [{id: 1, name: 'Ejemplo'}],
+ *   'datos_ejemplo.csv',
+ *   'No hay datos para descargar'
+ * )
+ * // => Genera el archivo 'datos_ejemplo.csv'
+ *
+ * @example
+ * // Ejemplo 2: Sin datos disponibles
+ * handleDownloadIfData(
+ *   [],
+ *   'datos_vacios.csv',
+ *   'No hay datos para descargar'
+ * )
+ * // => Muestra notificación "No hay datos para descargar"
+ */
+export const handleDownloadIfData = (dataArray: any[], fileName: string, message: string) => {
+  if (dataArray.length > 0) {
+    handleDownloadFileEvent(dataArray, fileName)
+  } else {
+    notify.info(message)
+  }
 }
