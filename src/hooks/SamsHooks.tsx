@@ -35,6 +35,17 @@ return useQuery<SearchResult, Error>({
     retry: false,
   })
 }
+export const getSamByHexId = (hexId: string) => {
+return useQuery<SearchResult, Error>({
+    queryKey: ['samcv', hexId],
+    queryFn: async () => {
+      const response = await apiClient.get(`/whitelist/first/${hexId}`)
+      return response.data
+    },
+    enabled: !!hexId,
+    retry: false,
+  })
+}
 
 export const getLatestVersionWL = () => {
   return useQuery({
@@ -73,6 +84,18 @@ export const useUploadListCV = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
       const response = await apiClient.post('/whitelist/sams-cv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }) 
+      return response.data
+    }
+  })
+}
+export const useUploadListWl = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/whitelist/sams-wl', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
