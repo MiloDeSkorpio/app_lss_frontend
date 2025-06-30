@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react"
 import SelectVersion from "../common/SelectVersion"
 import Search from "./Search"
-import { useCompareVersions } from "../../hooks/SamsHooks"
+import { useCompareVersionsCV, useRestoreVersionCV } from "../../hooks/SamsHooks"
 import type { VersionRecords } from "../../types"
-import { handleDownloadFileEvent } from "../../utils/FileHelpers"
+import {  handleDownloadIfData } from "../../utils/FileHelpers"
+import { notify } from "../../utils/notifications"
+import { useNavigate } from "react-router-dom"
 
 interface VersionCardProps {
   currentVersion: number
@@ -22,10 +24,12 @@ const VersionCard: React.FC<VersionCardProps> = ({
   bajasRecords,
   cambiosRecords,
 }: VersionCardProps) => {
+  const navigate = useNavigate()
   const [currentVers, setCurrentVersion] = useState<number | null>(null)
-  const [oldVersion, setOldVersion] = useState<number | null>(null)
+  const [oldVersion, setOldVersion] = useState<number>(0)
   const [downloadSucces, setDownloadSuccess] = useState(false)
-  const { mutate: compareVersions, error, data, reset } = useCompareVersions()
+  const { mutate: compareVersions, error, data, reset } = useCompareVersionsCV()
+  const { mutate: restoreVersion } = useRestoreVersionCV()
 
   const selectOldDisabled = !currentVers || data
   const selectCurDisabled = data
@@ -33,14 +37,14 @@ const VersionCard: React.FC<VersionCardProps> = ({
   const isRestoreDisabled = !downloadSucces
   const isCleanDisabled = !data
   const isDownloadDisabled = !data || downloadSucces
-  
+
   const filteredOldVersions = useMemo(() => {
     if (!currentVers) return []
     return previousVersions.filter((v) => Number(v.VERSION) < currentVers)
   }, [currentVers, previousVersions])
 
   useEffect(() => {
-    setOldVersion(null)
+    setOldVersion(0)
   }, [currentVers])
 
   const handleCompare = () => {
@@ -57,20 +61,35 @@ const VersionCard: React.FC<VersionCardProps> = ({
   const handleClean = () => {
     if (data) {
       setCurrentVersion(null)
-      setOldVersion(null)
+      setOldVersion(0)
       setDownloadSuccess(false)
       reset()
     }
   }
 
   const handleRestore = () => {
-    console.log("Restaurnado la version Seleccionada",oldVersion)
+    restoreVersion(oldVersion)
+    navigate('/sams')
+    notify.success('Version restaurada con exito')
   }
 
   const handleDownload = () => {
-    handleDownloadFileEvent(data.altasData,`listablanca_cv_altas_${currentVers}_to_${oldVersion}.csv`)
-    handleDownloadFileEvent(data.cambiosData,`listablanca_cv_cambios_${currentVers}_to_${oldVersion}.csv`)
-    handleDownloadFileEvent(data.bajasData,`listablanca_cv_bajas_${currentVers}_to_${oldVersion}.csv`)
+    handleDownloadIfData(
+      data.altasData,
+      `listablanca_cv_altas_${currentVers}_to_${oldVersion}.csv`,
+      'No hay información de Altas por descargar'
+    )
+    handleDownloadIfData(
+      data.cambiosData,
+      `listablanca_cv_cambios_${currentVers}_to_${oldVersion}.csv`,
+      'No hay información de Cambios por descargar'
+    )
+    handleDownloadIfData(
+      data.bajasData,
+      `listablanca_cv_bajas_${currentVers}_to_${oldVersion}.csv`,
+      'No hay información de Bajas por descargar'
+    )
+
     setDownloadSuccess(true)
   }
 
