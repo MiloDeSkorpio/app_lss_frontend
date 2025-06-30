@@ -10,6 +10,7 @@ import SamsCVSearch from './pages/sams/SamsCVSearch'
 import SamsCVVersions from './pages/sams/SamsCVVersions'
 import SamsSearch from './pages/sams/SamsSearch'
 import SamsUpdate from './pages/sams/SamsUpdate'
+import SamsVersions from './pages/sams/SamsVersions'
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "sams/versions-cv",
     element: <SamsCVVersions />,
+  },
+  {
+    path: "sams/versions",
+    element: <SamsVersions />,
   },
   {
     path: "tarjetas",
