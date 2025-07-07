@@ -39,3 +39,12 @@ export interface VersionsParams {
 export interface VersionRecords {
   VERSION: string
 }
+
+export type CompareVersionsData =  {
+  altasData: SearchResult[]
+  cambiosData: SearchResult[]
+  bajasData: SearchResult[]
+  altasRes: number
+  cambiosRes: number
+  bajasRes: number
+}
