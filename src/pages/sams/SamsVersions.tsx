@@ -1,9 +1,11 @@
 import VersionCard from "../../components/features/VersionCard"
-import {  getResume } from "../../hooks/SamsHooks"
+import {  getResume, useCompareVersions, useRestoreVersion } from "../../hooks/SamsHooks"
 
 
 const SamsVersions = () => {
   const  { data }  = getResume()
+  const { mutate: compareVersions, error: errorCompare, data: dataVers, reset: resetCompare } = useCompareVersions()
+  const { mutate: restoreVersion } = useRestoreVersion()
   
   return (
     <>
@@ -15,7 +17,13 @@ const SamsVersions = () => {
         altasRecords={data?.altasDataV}
         bajasRecords={data?.bajasDataV}
         cambiosRecords={data?.cambiosDataV}
-      />
+        compareVersions={compareVersions}
+        restoreVersion={restoreVersion} 
+        compareData={dataVers}
+        errorCompare={errorCompare}
+        resetCompare={resetCompare}
+        fileName={"listablanca_sams"} 
+     />
     </>
   )
 }
