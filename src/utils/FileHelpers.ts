@@ -34,7 +34,7 @@ export const downloadFile = (data: string, filename: string, type: string) => {
  * // Ana,30
  * // Luis,25
  */
-export  const convertToCSV = (objArray: any[]) => {
+export const convertToCSV = (objArray: any[]) => {
   const array =
     typeof objArray !== "object" ? JSON.parse(objArray) : objArray
   let str = ""
@@ -77,6 +77,18 @@ export const getCurrentDateTime = () => {
 
   return `${year}${month}${day}_${hours}${minutes}${seconds}`
 }
+export const getCurrentDateTimeInputs = () => {
+  const now = new Date()
+
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+
+  const hours = String(now.getHours()).padStart(2, "0")
+  const minutes = String(now.getMinutes()).padStart(2, "0")
+
+  return `${year}${month}${day}${hours}${minutes}`
+}
 
 /**
  * Genera y descarga tres archivos CSV con diferentes conjuntos de datos de la Whitelist:
@@ -104,8 +116,8 @@ export const getCurrentDateTime = () => {
  *     location_id: "LOC-001",
  *     estacion: "EST-1"
  *   }
- * ];
- * handleDownloadWL(whitelistData);
+ * ]
+ * handleDownloadWL(whitelistData)
  * // Descarga:
  * // - YYYYMMDD_HHMMSS_listablanca_cv_all.csv (dataset completo)
  * // - YYYYMMDD_HHMMSS_listablanca_cv_partial.csv (solo seriales)
@@ -113,46 +125,46 @@ export const getCurrentDateTime = () => {
  * 
  * @example <caption>Manejo de errores</caption>
  * try {
- *   handleDownloadWL(null);
+ *   handleDownloadWL(null)
  * } catch (error) {
- *   console.error("Error en descarga:", error.message);
- *   notify.error("Falló la generación de archivos");
+ *   console.error("Error en descarga:", error.message)
+ *   notify.error("Falló la generación de archivos")
  * }
  */
-export const handleDownloadWL = ( data: any ) => {
+export const handleDownloadWL = (data: any) => {
   const dateTime = getCurrentDateTime()
-      
-      // 1. Archivo completo
-      const allData = data.map((item: any) => ({
-        serial_dec: item.serial_dec,
-        serial_hex: item.serial_hex,
-        config: item.config,
-        operator: item.operator,
-        location_id: item.location_id,
-        estacion: item.estacion,
-      }))
-      const fullCSV = convertToCSV(allData)
-      downloadFile(fullCSV, `${dateTime}_listablanca_cv_all.csv`, "text/csv")
-  
-      // 2. Archivo solo con serial_dec y serial_hex
-      const serialData = data.map((item: any) => ({
-        serial_dec: item.serial_dec,
-        serial_hex: item.serial_hex,
-      }))
-      const serialCSV = convertToCSV(serialData)
-      downloadFile(
-        serialCSV,
-        `${dateTime}_listablanca_cv_partial.csv`,
-        "text/csv"
-      )
-  
-      // 3. Archivo solo con serial_hex
-      const hexOnlyData = data.map((item: any) => ({
-        serial_hex: item.serial_hex,
-      }))
-      const hexCSV = convertToCSV(hexOnlyData)
-      downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
-      notify.success('Descarga Exitosa!')
+
+  // 1. Archivo completo
+  const allData = data.map((item: any) => ({
+    serial_dec: item.serial_dec,
+    serial_hex: item.serial_hex,
+    config: item.config,
+    operator: item.operator,
+    location_id: item.location_id,
+    estacion: item.estacion,
+  }))
+  const fullCSV = convertToCSV(allData)
+  downloadFile(fullCSV, `${dateTime}_listablanca_cv_all.csv`, "text/csv")
+
+  // 2. Archivo solo con serial_dec y serial_hex
+  const serialData = data.map((item: any) => ({
+    serial_dec: item.serial_dec,
+    serial_hex: item.serial_hex,
+  }))
+  const serialCSV = convertToCSV(serialData)
+  downloadFile(
+    serialCSV,
+    `${dateTime}_listablanca_cv_partial.csv`,
+    "text/csv"
+  )
+
+  // 3. Archivo solo con serial_hex
+  const hexOnlyData = data.map((item: any) => ({
+    serial_hex: item.serial_hex,
+  }))
+  const hexCSV = convertToCSV(hexOnlyData)
+  downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
+  notify.success('Descarga Exitosa!')
 }
 /**
  * Convierte datos a formato CSV, los descarga como archivo y notifica el éxito.
@@ -185,10 +197,11 @@ export const handleDownloadWL = ( data: any ) => {
  *   console.error("Falló la descarga:", error.message)
  * }
  */
-export const handleDownloadFileEvent = (data: any, fileName: string) =>{
+export const handleDownloadFileEvent = (data: any, fileName: string) => {
+  console.log(data)
   const dataFile = data.map((item: any) => ({ ...item }))
   const eventCSV = convertToCSV(dataFile)
-  downloadFile(eventCSV,fileName,"text/csv")
+  downloadFile(eventCSV, fileName, "text/csv")
   notify.success(`Descarga de ${fileName} con exito!`)
 }
 /**
@@ -219,10 +232,23 @@ export const handleDownloadFileEvent = (data: any, fileName: string) =>{
  * )
  * // => Muestra notificación "No hay datos para descargar"
  */
-export const handleDownloadIfData = (dataArray: any[], fileName: string, message: string) => {
-  if (dataArray.length > 0) {
-    handleDownloadFileEvent(dataArray, fileName)
-  } else {
-    notify.info(message)
+export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
+  const dateTime = getCurrentDateTimeInputs()
+  const providerCodes = {
+    "01": ['01', '02', '03', '04', '05', '06', '07'],
+    "5A": ['5A', '3C'],
+    "32": ['32'],
+    "15": ['15'],
+    "46": ['46']
   }
+  Object.entries(providerCodes).forEach(([key, codes]) => {
+
+    const filteredData = dataArray.filter(item =>
+      codes.some(code => String(item.OPERATOR) === String(code)))
+
+    if (filteredData.length > 0) {
+      const finalFileName = `${fileName}_${key}_${dateTime}.csv`  
+      handleDownloadFileEvent(filteredData, finalFileName)
+    } 
+  })
 }
