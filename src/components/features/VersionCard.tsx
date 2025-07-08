@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react"
 import SelectVersion from "../common/SelectVersion"
 import Search from "./Search"
-import { useCompareVersionsCV, useRestoreVersionCV } from "../../hooks/SamsHooks"
-import type { VersionRecords } from "../../types"
-import {  handleDownloadIfData } from "../../utils/FileHelpers"
+import type { CompareVersionsData, VersionRecords } from "../../types"
+import { handleDownloadIfData } from "../../utils/FileHelpers"
 import { notify } from "../../utils/notifications"
 import { useNavigate } from "react-router-dom"
 
@@ -14,6 +13,12 @@ interface VersionCardProps {
   altasRecords?: number
   bajasRecords?: number
   cambiosRecords?: number
+  compareVersions: (params: { currentVers: number; oldVersion: number }) => void
+  restoreVersion: (version: number) => void
+  compareData: CompareVersionsData
+  errorCompare: any
+  resetCompare: () => void
+  fileName: string
 }
 
 const VersionCard: React.FC<VersionCardProps> = ({
@@ -23,20 +28,25 @@ const VersionCard: React.FC<VersionCardProps> = ({
   altasRecords,
   bajasRecords,
   cambiosRecords,
+  compareVersions,
+  restoreVersion,
+  compareData,
+  errorCompare,
+  resetCompare,
+  fileName
 }: VersionCardProps) => {
   const navigate = useNavigate()
   const [currentVers, setCurrentVersion] = useState<number | null>(null)
   const [oldVersion, setOldVersion] = useState<number>(0)
   const [downloadSucces, setDownloadSuccess] = useState(false)
-  const { mutate: compareVersions, error, data, reset } = useCompareVersionsCV()
-  const { mutate: restoreVersion } = useRestoreVersionCV()
-
-  const selectOldDisabled = !currentVers || data
-  const selectCurDisabled = data
-  const isCompareDisabled = !currentVers || !oldVersion || data
+  
+  //Estos mutate se pasan como props
+  const selectOldDisabled = !currentVers || !!compareData
+  const selectCurDisabled = !!compareData
+  const isCompareDisabled = !currentVers || !oldVersion || !!compareData
   const isRestoreDisabled = !downloadSucces
-  const isCleanDisabled = !data
-  const isDownloadDisabled = !data || downloadSucces
+  const isCleanDisabled = !compareData
+  const isDownloadDisabled = !compareData || downloadSucces
 
   const filteredOldVersions = useMemo(() => {
     if (!currentVers) return []
@@ -59,11 +69,11 @@ const VersionCard: React.FC<VersionCardProps> = ({
   }
 
   const handleClean = () => {
-    if (data) {
+    if (compareData) {
       setCurrentVersion(null)
       setOldVersion(0)
       setDownloadSuccess(false)
-      reset()
+      resetCompare()
     }
   }
 
@@ -74,22 +84,19 @@ const VersionCard: React.FC<VersionCardProps> = ({
   }
 
   const handleDownload = () => {
+    if(!compareData) { return }
     handleDownloadIfData(
-      data.altasData,
-      `listablanca_cv_altas_${currentVers}_to_${oldVersion}.csv`,
-      'No hay información de Altas por descargar'
+      compareData.altasData,
+      `${fileName}_altas`
     )
     handleDownloadIfData(
-      data.cambiosData,
-      `listablanca_cv_cambios_${currentVers}_to_${oldVersion}.csv`,
-      'No hay información de Cambios por descargar'
+      compareData.cambiosData,
+      `${fileName}_cambios`
     )
     handleDownloadIfData(
-      data.bajasData,
-      `listablanca_cv_bajas_${currentVers}_to_${oldVersion}.csv`,
-      'No hay información de Bajas por descargar'
+      compareData.bajasData,
+      `${fileName}_bajas`
     )
-
     setDownloadSuccess(true)
   }
 
@@ -168,41 +175,41 @@ const VersionCard: React.FC<VersionCardProps> = ({
           </button>
         </div>
       </div>
-      {data ? (
+      {compareData ? (
         <div className=" space-y-1 ">
           <div className="flex space-x-1">
             <div className="space-y-2">
               <h2 className="text-lg font-bold text-blue-700">
-                Altas: {data.altasRes}
+                Altas: {compareData.altasRes}
               </h2>
               <Search
-                data={data.altasData}
+                data={compareData.altasData}
                 isLoading={false}
-                error={error}
+                error={errorCompare}
                 onClean={handleClean}
                 showAllFields={false}
               />
             </div>
             <div className="space-y-2">
               <h2 className="text-lg font-bold text-blue-700">
-                Bajas: {data.bajasRes}
+                Bajas: {compareData.bajasRes}
               </h2>
               <Search
-                data={data.bajasData}
+                data={compareData.bajasData}
                 isLoading={false}
-                error={error}
+                error={errorCompare}
                 onClean={handleClean}
                 showAllFields={false}
               />
             </div>
             <div className="space-y-2">
               <h2 className="text-lg font-bold text-blue-700">
-                Cambios: {data.cambiosRes}
+                Cambios: {compareData.cambiosRes}
               </h2>
               <Search
-                data={data.cambiosData}
+                data={compareData.cambiosData}
                 isLoading={false}
-                error={error}
+                error={errorCompare}
                 onClean={handleClean}
                 showAllFields={false}
               />
