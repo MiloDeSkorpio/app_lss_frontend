@@ -2,6 +2,7 @@ import type { UseMutationResult } from "@tanstack/react-query"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { notify } from "../../utils/notifications"
+import type { AxiosError } from "axios"
 
 type LoaderCSVProps = {
   uploadMutation: UseMutationResult<any, unknown, FormData>
@@ -30,10 +31,9 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
           setFiles([])
         },
         onError: (error) => {
-          notify.error(
-            `Error al subir archivos: ${
-              error instanceof Error ? error.message : "Error desconocido"
-            }`
+          const err = error as AxiosError<any> // <--- casting
+          const message = err.response?.data?.error || err.message || 'Error desconocido'
+          notify.error(`${ message }`
           )
         },
       })
@@ -196,7 +196,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
             <div className="p-3 bg-red-50 text-red-600 rounded-md">
               Error:{" "}
               {uploadMutation.error instanceof Error
-                ? uploadMutation.error.message
+                ? uploadMutation.error.response?.data?.error
                 : "Error desconocido"}
             </div>
           )}
