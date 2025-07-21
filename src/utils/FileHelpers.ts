@@ -1,4 +1,37 @@
 import { notify } from "./notifications"
+/**
+ * Valida si el nombre de un archivo coincide con alguno de los patrones definidos.
+ *
+ * Los patrones aceptan nombres específicos para archivos CSV relacionados con:
+ * - listanegra: listanegra_tarjetas_(altas|bajas|cambios)_<HEX2>_<TIMESTAMP14>.csv
+ * - listablanca: listablanca_sams_(altas|bajas|cambios)_<HEX2>_<TIMESTAMP12>.csv
+ * - listablanca_cv: listablanca_sams_cv_(altas|bajas|cambios)_<HEX2>_<TIMESTAMP12>.csv
+ * - inventario: inventario_sams_(altas|bajas|cambios)_<HEX2>_<TIMESTAMP12>.csv
+ * - sams: buscar_sams*.csv
+ *
+ * @param {string} filename - Nombre del archivo a validar.
+ * @returns {boolean} Retorna `true` si el nombre del archivo coincide con alguno de los patrones válidos, `false` en caso contrario.
+ */
+export const validateFileName = (filename: string): boolean => {
+  try {
+    const patterns = {
+      listanegra: /^listanegra_tarjetas_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{14}\.csv$/,
+      listablanca: /^listablanca_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+      listablanca_cv: /^listablanca_sams_cv_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+      inventario: /^inventario_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+      sams: /^buscar_sams.*\.csv$/
+    }
+
+    const fileType = Object.entries(patterns).find(([, regex]) =>
+      regex.test(filename)
+    )?.[0]
+
+    return !!fileType  
+  } catch (error) {
+    notify.error(`Error al validar nombre de archivo: ${filename}`)
+    return false
+  }
+}
 
 /**
  * Descarga un archivo en el navegador utilizando un objeto Blob.
