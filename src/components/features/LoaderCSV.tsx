@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
+import { validateFileName } from "../../utils/FileHelpers"
 
 type LoaderCSVProps = {
   uploadMutation: UseMutationResult<any, unknown, FormData>
@@ -16,6 +17,27 @@ type ExtendedFile = File & {
 
 const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFiles, multiple }) => {
   const [files, setFiles] = useState<ExtendedFile[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  const onDropValidated = (acceptedFiles: File[]) => {
+    const validFiles = acceptedFiles.filter(file => validateFileName(file.name))
+    const invalidFiles = acceptedFiles.filter(file => !validateFileName(file.name))
+
+    if (invalidFiles.length > 0) {
+      invalidFiles.forEach(file => {
+        notify.error(`El archivo "${file.name}" no cumple con el formato requerido`)
+      })
+
+      const message = `Se encontraron ${invalidFiles.length} archivo(s) inválido(s)`
+      setError(message) // Opcional: para mostrar en UI
+    }
+
+    if (validFiles.length > 0) {
+      onDrop(validFiles)
+    }
+  }
+
+
   const handleUpload = () => {
     if (files.length > 0) {
       // Crear FormData y agregar todos los archivos
@@ -23,7 +45,6 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
       files.forEach((file) => {
         formData.append(`${multerOpt}`, file) // csvFiles es el mismo nombre que se utiliza en el backend desde multer "upload.array('csvFiles')"
       })
-
       // Usar mutationFn directamente si está configurada para FormData
       uploadMutation.mutate(formData, {
         onSuccess: () => {
@@ -33,7 +54,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
         onError: (error) => {
           const err = error as AxiosError<any> // <--- casting
           const message = err.response?.data?.error || err.message || 'Error desconocido'
-          notify.error(`${ message }`
+          notify.error(`${message}`
           )
         },
       })
@@ -51,7 +72,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+    onDrop: onDropValidated,
     accept: {
       "text/csv": [".csv"],
       "application/vnd.ms-excel": [".csv"], // Para compatibilidad con versiones antiguas
@@ -78,11 +99,10 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
     <>
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-          isDragActive
-            ? "bg-blue-50 border-blue-400"
-            : "bg-white border-gray-300"
-        }`}
+        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${isDragActive
+          ? "bg-blue-50 border-blue-400"
+          : "bg-white border-gray-300"
+          }`}
       >
         <input {...getInputProps()} />
         <div className="space-y-2">
@@ -183,11 +203,10 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
           <button
             onClick={handleUpload}
             disabled={uploadMutation.isPending}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-              uploadMutation.isPending
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+              }`}
           >
             {uploadMutation.isPending ? "Subiendo..." : "Subir archivo"}
           </button>
@@ -196,8 +215,14 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
             <div className="p-3 bg-red-50 text-red-600 rounded-md">
               Error:{" "}
               {uploadMutation.error instanceof Error
-                ? uploadMutation.error.response?.data?.error
+                ? uploadMutation.error.message
                 : "Error desconocido"}
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 bg-red-50 text-red-600 rounded-md">
+              Error: {error}
             </div>
           )}
 
