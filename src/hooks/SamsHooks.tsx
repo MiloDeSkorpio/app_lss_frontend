@@ -89,6 +89,19 @@ export const useUploadCV = () => {
     }
   })
 }
+// Ejemplo para enviar datos (POST)
+export const useValidateCV = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/whitelist/validate-cv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    }
+  })
+}
 export const useUploadWL = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
