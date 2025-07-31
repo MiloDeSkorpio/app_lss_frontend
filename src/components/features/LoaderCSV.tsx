@@ -4,6 +4,8 @@ import { useDropzone } from "react-dropzone"
 import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
 import { validateFileName } from "../../utils/FileHelpers"
+import { ErrorModal } from "../common/ErrorModal"
+import type { ValidationError } from "../../types"
 
 type LoaderCSVProps = {
   uploadMutation: UseMutationResult<any, unknown, FormData>
@@ -17,7 +19,15 @@ type ExtendedFile = File & {
 
 const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFiles, multiple }) => {
   const [files, setFiles] = useState<ExtendedFile[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const [ ,setError] = useState<string | null>(null)
+
+  const [modalErrors, setModalErrors] = useState<ValidationError[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const showErrorModal = (errors: ValidationError[]) => {
+    setModalErrors(errors)
+    setIsModalOpen(true)
+  }
 
   const onDropValidated = (acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter(file => validateFileName(file.name))
@@ -52,11 +62,16 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
           setFiles([])
         },
         onError: (error) => {
-          const err = error as AxiosError<any> // <--- casting
-          const message = err.response?.data?.error || err.message || 'Error desconocido'
-          notify.error(`${message}`
-          )
-        },
+          const err = error as AxiosError<any>
+          const responseData = err.response?.data
+          const defaultMessage = err.message || 'Error desconocido'
+    
+          if (Array.isArray(responseData?.errorsFiles)) {
+            showErrorModal(responseData.errorsFiles) // Mostrar errores en modal
+          } else {
+            notify.error(responseData?.error || defaultMessage)
+          }
+        }
       })
     }
   }
@@ -208,7 +223,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
               : "bg-blue-600 hover:bg-blue-700"
               }`}
           >
-            {uploadMutation.isPending ? "Subiendo..." : "Subir archivo"}
+            {uploadMutation.isPending ? "Validando..." : "Validar información"}
           </button>
 
           {uploadMutation.isError && (
@@ -219,13 +234,6 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
                 : "Error desconocido"}
             </div>
           )}
-
-          {error && (
-            <div className="p-3 bg-red-50 text-red-600 rounded-md">
-              Error: {error}
-            </div>
-          )}
-
           {uploadMutation.isSuccess && (
             <div className="p-3 bg-green-50 text-green-600 rounded-md">
               Archivo subido correctamente
@@ -233,6 +241,11 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
           )}
         </div>
       )}
+      <ErrorModal
+        isOpen={isModalOpen}
+        errorsF={modalErrors}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   )
 }
