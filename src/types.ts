@@ -48,3 +48,12 @@ export type CompareVersionsData =  {
   cambiosRes: number
   bajasRes: number
 }
+
+export interface ValidationErrorItem {
+  message?: string
+}
+
+export interface ValidationError {
+  fileName?: string
+  fileErrors?: ValidationErrorItem[]
+}
