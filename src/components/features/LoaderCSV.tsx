@@ -5,10 +5,11 @@ import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
 import { validateFileName } from "../../utils/FileHelpers"
 import { ErrorModal } from "../common/ErrorModal"
-import type { ValidationError } from "../../types"
+import type { ValidationError, validationResult } from "../../types"
+import ShowInfo from "../common/ShowInfo"
 
 type LoaderCSVProps = {
-  uploadMutation: UseMutationResult<any, unknown, FormData>
+  validateMutation: UseMutationResult<any, unknown, FormData>
   multerOpt: string
   maxFiles: number
   multiple: boolean
@@ -17,16 +18,23 @@ type ExtendedFile = File & {
   preview: string
 }
 
-const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFiles, multiple }) => {
+const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, multerOpt, maxFiles, multiple }) => {
   const [files, setFiles] = useState<ExtendedFile[]>([])
   const [ ,setError] = useState<string | null>(null)
 
   const [modalErrors, setModalErrors] = useState<ValidationError[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const [modalInfo, setModalInfo] = useState<validationResult[]>([])
+  const [isModalIOpen, setIsModalIOpen] = useState(false)
+
   const showErrorModal = (errors: ValidationError[]) => {
     setModalErrors(errors)
     setIsModalOpen(true)
+  }
+  const showModalInfo = (data:validationResult[]) => {
+    setModalInfo(data)
+    setIsModalIOpen(true)
   }
 
   const onDropValidated = (acceptedFiles: File[]) => {
@@ -56,9 +64,10 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
         formData.append(`${multerOpt}`, file) // csvFiles es el mismo nombre que se utiliza en el backend desde multer "upload.array('csvFiles')"
       })
       // Usar mutationFn directamente si está configurada para FormData
-      uploadMutation.mutate(formData, {
-        onSuccess: () => {
-          notify.success(`${files.length} archivo(s) subido(s) correctamente`)
+      validateMutation.mutate(formData, {
+        onSuccess: (data) => {
+          showModalInfo(data)
+          notify.success(`${files.length} archivo(s) validado(s) correctamente`)
           setFiles([])
         },
         onError: (error) => {
@@ -217,34 +226,40 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ uploadMutation, multerOpt, maxFil
           </ul>
           <button
             onClick={handleUpload}
-            disabled={uploadMutation.isPending}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
+            disabled={validateMutation.isPending}
+            className={`w-full py-2 px-4 rounded-md text-white font-medium ${validateMutation.isPending
               ? "bg-blue-300 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
               }`}
           >
-            {uploadMutation.isPending ? "Validando..." : "Validar información"}
+            {validateMutation.isPending ? "Validando..." : "Validar información"}
           </button>
 
-          {uploadMutation.isError && (
+          {validateMutation.isError && (
             <div className="p-3 bg-red-50 text-red-600 rounded-md">
               Error:{" "}
-              {uploadMutation.error instanceof Error
-                ? uploadMutation.error.message
+              {validateMutation.error instanceof Error
+                ? validateMutation.error.message
                 : "Error desconocido"}
             </div>
           )}
-          {uploadMutation.isSuccess && (
+          {validateMutation.isSuccess && (
             <div className="p-3 bg-green-50 text-green-600 rounded-md">
               Archivo subido correctamente
             </div>
           )}
         </div>
       )}
+
       <ErrorModal
         isOpen={isModalOpen}
         errorsF={modalErrors}
         onClose={() => setIsModalOpen(false)}
+      />
+      <ShowInfo
+        isOpen={isModalIOpen}
+        data={modalInfo}
+        onClose={() => setIsModalIOpen(false)}
       />
     </>
   )
