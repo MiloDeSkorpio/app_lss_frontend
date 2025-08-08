@@ -40,7 +40,7 @@ export interface VersionRecords {
   VERSION: string
 }
 
-export type CompareVersionsData =  {
+export type CompareVersionsData = {
   altasData: SearchResult[]
   cambiosData: SearchResult[]
   bajasData: SearchResult[]
@@ -48,7 +48,20 @@ export type CompareVersionsData =  {
   cambiosRes: number
   bajasRes: number
 }
-
+export interface validationResult {
+  success: boolean
+  newVersion: number
+  currentVersion: number
+  currentVersionCount: number
+  newRecordsCount: number
+  newRecordsVersion: SearchResult[]
+  altasDuplicadas: any[]
+  bajasInactivas: any[]
+  sinCambios: any[]
+  bajasValidas: any[]
+  cambiosValidos: any[]
+  altasValidas: any[]
+}
 export interface ValidationErrorItem {
   message?: string
 }
