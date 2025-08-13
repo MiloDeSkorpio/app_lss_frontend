@@ -109,6 +109,18 @@ export const useValidateCV = () => {
     }
   })
 }
+export const useValidate = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/whitelist/validate', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    }
+  })
+}
 export const useUploadWL = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
