@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom"
+import { useUploadCV } from "../../hooks/SamsHooks"
 import type { validationResult } from "../../types"
 import OrganismoRes from "./OrganismoRes"
+import { notify } from "../../utils/notifications"
 
 interface ShowInfoProps {
   isOpen: boolean
@@ -11,7 +14,7 @@ interface ShowInfoProps {
 const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version', data, onClose }) => {
   if (!isOpen) return null
   const result = data[0]
-  
+  const dataFinal = [result.altasValidas, result.bajasValidas, result.cambiosValidos]
   const organismos = {
     "MB": ['01', '02', '03', '04', '05', '06', '07'],
     "STE": ['5A', '3C'],
@@ -19,9 +22,30 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version
     "ORT": ['15'],
     "RTP": ['46']
   }
+  const { mutate } = useUploadCV()
+  const navigate = useNavigate()
   const totalAltas = result.altasValidas.length
   const totalBajas = result.bajasValidas.length
   const totalCambios = result.cambiosValidos.length
+  const handleUpload = () => {
+    mutate(
+      {
+        altasValidas: dataFinal[0],
+        bajasValidas: dataFinal[1],
+        cambiosValidos: dataFinal[2],
+      },
+      {
+        onSuccess: () => {
+          notify.success('Nueva Version Creada con Exito!')
+          navigate('/sams')  // Cambia por la ruta a donde quieras i
+        },
+        onError: (error) => {
+          // manejar error aquí si quieres
+          console.error(error)
+        }
+      }
+    )
+  }
 
   return (
 
@@ -56,7 +80,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version
           {(totalAltas !== 0 || totalBajas !== 0 || totalCambios !== 0) && (
             <div>
               <button
-                onClick={onClose}
+                onClick={handleUpload}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 Actualizar Versión
