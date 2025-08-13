@@ -231,7 +231,6 @@ export const handleDownloadWL = (data: any) => {
  * }
  */
 export const handleDownloadFileEvent = (data: any, fileName: string) => {
-  console.log(data)
   const dataFile = data.map((item: any) => ({ ...item }))
   const eventCSV = convertToCSV(dataFile)
   downloadFile(eventCSV, fileName, "text/csv")
