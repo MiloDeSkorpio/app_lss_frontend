@@ -5,13 +5,13 @@ const SamsCVUpdate = () => {
   const multerOpt = "csvFiles"
   const maxFiles = 15
   const multiple = true
-  const uploadMutation = useValidateCV()
+  const validateMutation = useValidateCV()
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Actualización de CV</h1>
       <LoaderCSV
-        uploadMutation={uploadMutation}
+        validateMutation={validateMutation}
         multerOpt={multerOpt}
         maxFiles={maxFiles}
         multiple={multiple}
