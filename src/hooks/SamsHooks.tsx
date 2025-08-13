@@ -77,18 +77,25 @@ export const getLatestVersionInv = () => {
 }
 
 // Ejemplo para enviar datos (POST)
+type ListCVPayload = {
+  altasValidas: any[],
+  bajasValidas: any[],
+  cambiosValidos: any[]
+}
+
 export const useUploadCV = () => {
   return useMutation({
-    mutationFn: async (formData: FormData) => {
-      const response = await apiClient.post('/whitelist/new-version-cv', formData, {
+    mutationFn: async (payload: ListCVPayload) => {
+      const response = await apiClient.post('/whitelist/new-version-cv', payload, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       })
       return response.data
     }
   })
 }
+
 // Ejemplo para enviar datos (POST)
 export const useValidateCV = () => {
   return useMutation({
