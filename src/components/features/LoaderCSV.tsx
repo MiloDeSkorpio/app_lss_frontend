@@ -7,9 +7,11 @@ import { validateFileName } from "../../utils/FileHelpers"
 import { ErrorModal } from "../common/ErrorModal"
 import type { ValidationError, validationResult } from "../../types"
 import ShowInfo from "../common/ShowInfo"
+import type { ListCVPayload } from "../../hooks/SamsHooks"
 
 type LoaderCSVProps = {
   validateMutation: UseMutationResult<any, unknown, FormData>
+  uploadMutation: UseMutationResult<any, unknown, ListCVPayload>
   multerOpt: string
   maxFiles: number
   multiple: boolean
@@ -18,7 +20,7 @@ type ExtendedFile = File & {
   preview: string
 }
 
-const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, multerOpt, maxFiles, multiple }) => {
+const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation,uploadMutation, multerOpt, maxFiles, multiple }) => {
   const [files, setFiles] = useState<ExtendedFile[]>([])
   const [ ,setError] = useState<string | null>(null)
 
@@ -55,7 +57,6 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, multerOpt, maxF
     }
   }
 
-
   const handleUpload = () => {
     if (files.length > 0) {
       // Crear FormData y agregar todos los archivos
@@ -72,13 +73,12 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, multerOpt, maxF
         },
         onError: (error) => {
           const err = error as AxiosError<any>
-          const responseData = err.response?.data
+          const { errorsFiles } = err.response?.data
           const defaultMessage = err.message || 'Error desconocido'
-    
-          if (Array.isArray(responseData?.errorsFiles)) {
-            showErrorModal(responseData.errorsFiles) // Mostrar errores en modal
+          if (Array.isArray(errorsFiles)) {
+            showErrorModal(errorsFiles) // Mostrar errores en modal
           } else {
-            notify.error(responseData?.error || defaultMessage)
+            notify.error(errorsFiles?.error || defaultMessage)
           }
         }
       })
@@ -258,6 +258,7 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, multerOpt, maxF
       />
       <ShowInfo
         isOpen={isModalIOpen}
+        uploadMutation={uploadMutation}
         data={modalInfo}
         onClose={() => setIsModalIOpen(false)}
       />
