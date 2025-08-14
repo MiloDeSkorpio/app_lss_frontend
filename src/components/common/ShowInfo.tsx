@@ -1,17 +1,19 @@
 import { useNavigate } from "react-router-dom"
-import { useUploadCV } from "../../hooks/SamsHooks"
 import type { validationResult } from "../../types"
 import OrganismoRes from "./OrganismoRes"
 import { notify } from "../../utils/notifications"
+import type { UseMutationResult } from "@tanstack/react-query"
+import type { ListCVPayload } from "../../hooks/SamsHooks"
 
 interface ShowInfoProps {
   isOpen: boolean
   title?: string
   data: validationResult[]
   onClose: () => void
+  uploadMutation: UseMutationResult<any, unknown, ListCVPayload>
 }
 // Define any props needed for ShowInfo component
-const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version', data, onClose }) => {
+const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {
   if (!isOpen) return null
   const result = data[0]
   const dataFinal = [result.altasValidas, result.bajasValidas, result.cambiosValidos]
@@ -22,13 +24,13 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version
     "ORT": ['15'],
     "RTP": ['46']
   }
-  const { mutate } = useUploadCV()
+  
   const navigate = useNavigate()
   const totalAltas = result.altasValidas.length
   const totalBajas = result.bajasValidas.length
   const totalCambios = result.cambiosValidos.length
   const handleUpload = () => {
-    mutate(
+    uploadMutation.mutate(
       {
         altasValidas: dataFinal[0],
         bajasValidas: dataFinal[1],
