@@ -55,7 +55,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadWL(samsCV)
+            handleDownloadWL(samsCV,'listablanca_cv')
           }}
           onUpdate={() => navigate("/sams/update-cv")}
           onSearch={() => navigate("/sams/search-cv")}
@@ -84,7 +84,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadWL(samsWL)
+            handleDownloadWL(samsWL,'listablanca')
           }}
           onUpdate={() => navigate("/sams/update")}
           onSearch={() => navigate("/sams/search")}
@@ -113,7 +113,7 @@ const SamsView = () => {
           ]}
           onDownload={(e) => {
             e.preventDefault()
-            handleDownloadWL(samsWL)
+            handleDownloadWL(samsInv,'inventario')
           }}
           onUpdate={() => navigate("/sams/update")}
           onSearch={() => navigate("/sams/search")}
