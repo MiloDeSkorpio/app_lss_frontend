@@ -9,7 +9,7 @@ const SamsVersions = () => {
   
   return (
     <>
-      <h1>Control de Versiones SAMS CV</h1>
+      <h1>Control de Versiones SAMS</h1>
       <VersionCard
         currentVersion={data?.currentVersion}
         currentRecordsV={data?.totalRecords}
