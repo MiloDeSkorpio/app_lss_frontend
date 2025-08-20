@@ -164,7 +164,7 @@ export const getCurrentDateTimeInputs = () => {
  *   notify.error("Falló la generación de archivos")
  * }
  */
-export const handleDownloadWL = (data: any) => {
+export const handleDownloadWL = (data: any, name: string) => {
   const dateTime = getCurrentDateTime()
 
   // 1. Archivo completo
@@ -177,7 +177,7 @@ export const handleDownloadWL = (data: any) => {
     estacion: item.estacion,
   }))
   const fullCSV = convertToCSV(allData)
-  downloadFile(fullCSV, `${dateTime}_listablanca_cv_all.csv`, "text/csv")
+  downloadFile(fullCSV, `${dateTime}_${name}_all.csv`, "text/csv")
 
   // 2. Archivo solo con serial_dec y serial_hex
   const serialData = data.map((item: any) => ({
@@ -187,7 +187,7 @@ export const handleDownloadWL = (data: any) => {
   const serialCSV = convertToCSV(serialData)
   downloadFile(
     serialCSV,
-    `${dateTime}_listablanca_cv_partial.csv`,
+    `${dateTime}_${name}_partial.csv`,
     "text/csv"
   )
 
@@ -196,7 +196,7 @@ export const handleDownloadWL = (data: any) => {
     serial_hex: item.serial_hex,
   }))
   const hexCSV = convertToCSV(hexOnlyData)
-  downloadFile(hexCSV, `${dateTime}_listablanca_cv.csv`, "text/csv")
+  downloadFile(hexCSV, `${dateTime}_${name}.csv`, "text/csv")
   notify.success('Descarga Exitosa!')
 }
 /**
