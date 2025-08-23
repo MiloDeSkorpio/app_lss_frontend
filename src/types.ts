@@ -70,3 +70,8 @@ export interface ValidationError {
   fileName?: string
   fileErrors?: ValidationErrorItem[]
 }
+
+export interface ValidationFileResult {
+  isValid: boolean;
+  errorMessage?: string;
+}
