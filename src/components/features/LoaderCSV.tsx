@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
-import { validateFileName } from "../../utils/FileHelpers"
+import { validateFileNameWithDetails } from "../../utils/FileHelpers"
 import { ErrorModal } from "../common/ErrorModal"
 import type { ValidationError, validationResult } from "../../types"
 import ShowInfo from "../common/ShowInfo"
 import type { ListCVPayload } from "../../hooks/SamsHooks"
+import { useLocation } from "react-router-dom"
 
 type LoaderCSVProps = {
   validateMutation: UseMutationResult<any, unknown, FormData>
@@ -20,9 +21,10 @@ type ExtendedFile = File & {
   preview: string
 }
 
-const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation,uploadMutation, multerOpt, maxFiles, multiple }) => {
+const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation, multerOpt, maxFiles, multiple }) => {
+  const location = useLocation()
   const [files, setFiles] = useState<ExtendedFile[]>([])
-  const [ ,setError] = useState<string | null>(null)
+  const [, setError] = useState<string | null>(null)
 
   const [modalErrors, setModalErrors] = useState<ValidationError[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -34,22 +36,31 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation,uploadMutation, 
     setModalErrors(errors)
     setIsModalOpen(true)
   }
-  const showModalInfo = (data:validationResult[]) => {
+  const showModalInfo = (data: validationResult[]) => {
     setModalInfo(data)
     setIsModalIOpen(true)
   }
-
   const onDropValidated = (acceptedFiles: File[]) => {
-    const validFiles = acceptedFiles.filter(file => validateFileName(file.name))
-    const invalidFiles = acceptedFiles.filter(file => !validateFileName(file.name))
+    // Validar todos los archivos de una vez
+    const filesWithValidation = acceptedFiles.map(file => ({
+      file,
+      validation: validateFileNameWithDetails(file.name, location.pathname)
+    }))
 
+    const validFiles = filesWithValidation
+      .filter(({ validation }) => validation.isValid)
+      .map(({ file }) => file)
+
+    const invalidFiles = filesWithValidation
+      .filter(({ validation }) => !validation.isValid)
+
+    // Mostrar errores detallados
     if (invalidFiles.length > 0) {
-      invalidFiles.forEach(file => {
-        notify.error(`El archivo "${file.name}" no cumple con el formato requerido`)
+      invalidFiles.forEach(({ file, validation }) => {
+        notify.error(`"${file.name}": ${validation.errorMessage}`)
       })
 
-      const message = `Se encontraron ${invalidFiles.length} archivo(s) inválido(s)`
-      setError(message) // Opcional: para mostrar en UI
+      setError(`${invalidFiles.length} archivo(s) con formato incorrecto`)
     }
 
     if (validFiles.length > 0) {
