@@ -1,3 +1,4 @@
+import type { ValidationFileResult } from "../types";
 import { notify } from "./notifications"
 /**
  * Valida si el nombre de un archivo coincide con alguno de los patrones definidos.
@@ -12,24 +13,57 @@ import { notify } from "./notifications"
  * @param {string} filename - Nombre del archivo a validar.
  * @returns {boolean} Retorna `true` si el nombre del archivo coincide con alguno de los patrones válidos, `false` en caso contrario.
  */
-export const validateFileName = (filename: string): boolean => {
+
+export const validateFileNameWithDetails = (
+  filename: string,
+  pathname: string
+): ValidationFileResult => {
   try {
     const patterns = {
-      listanegra: /^listanegra_tarjetas_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{14}\.csv$/,
-      listablanca: /^listablanca_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
-      listablanca_cv: /^listablanca_sams_cv_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
-      inventario: /^inventario_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
-      sams: /^buscar_sams.*\.csv$/
+      '/sams/update-cv': {
+        regex: /^listablanca_sams_cv_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+        example: 'listablanca_sams_cv_altas_01_202312011200.csv'
+      },
+      '/sams/update-inventory': {
+        regex: /^inventario_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+        example: 'inventario_sams_altas_02_202312011200.csv'
+      },
+      '/sams/update-blacklist': {
+        regex: /^listanegra_tarjetas_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{14}\.csv$/,
+        example: 'listanegra_tarjetas_bajas_03_20231201120000.csv'
+      },
+      '/sams/update': {
+        regex: /^listablanca_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
+        example: 'listablanca_sams_cambios_04_202312011200.csv'
+      },
+      '/sams/search': {
+        regex: /^buscar_sams.*\.csv$/,
+        example: 'buscar_sams_cualquier_cosa.csv'
+      }
     }
 
-    const fileType = Object.entries(patterns).find(([, regex]) =>
-      regex.test(filename)
-    )?.[0]
+    const patternConfig = patterns[pathname as keyof typeof patterns]
+    if (!patternConfig) {
+      return {
+        isValid: filename.toLowerCase().endsWith('.csv'),
+        errorMessage: 'Solo se permiten archivos CSV en esta ruta'
+      }
+    }
 
-    return !!fileType  
+    const isValid = patternConfig.regex.test(filename)
+
+    console.log(isValid)
+    return {
+      isValid,
+      errorMessage: isValid ? undefined :
+        `Formato inválido. Ejemplo: ${patternConfig.example}`
+    }
+
   } catch (error) {
-    notify.error(`Error al validar nombre de archivo: ${filename}`)
-    return false
+    return {
+      isValid: false,
+      errorMessage: `Error de validación: ${error}`
+    }
   }
 }
 
@@ -279,8 +313,8 @@ export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
       codes.some(code => String(item.OPERATOR) === String(code)))
 
     if (filteredData.length > 0) {
-      const finalFileName = `${fileName}_${key}_${dateTime}.csv`  
+      const finalFileName = `${fileName}_${key}_${dateTime}.csv`
       handleDownloadFileEvent(filteredData, finalFileName)
-    } 
+    }
   })
 }
