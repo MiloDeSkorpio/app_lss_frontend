@@ -4,7 +4,6 @@ import { handleDownloadWL } from "../../utils/FileHelpers"
 import { useRouteAwareApi } from "../../hooks/useRouteAwareApi"
 import type { CardConfig } from "../../types"
 
-
 // Define the props type for the sub-component
 interface OperatorCardFromConfigProps {
   cardConfig: CardConfig
@@ -54,12 +53,12 @@ const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => 
 }
 
 const SamsView = () => {
-  const routeConfig = useRouteAwareApi()
-  if (!routeConfig || !routeConfig.cards) {
+  const config = useRouteAwareApi()
+  if (!config || !('cards' in config) || !config.cards) {
     return <div>Cargando configuración de la ruta...</div>
   }
 
-  const { title, cards } = routeConfig
+  const { title, cards } = config
 
   return (
     <div className="space-y-4">
