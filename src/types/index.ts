@@ -75,3 +75,23 @@ export interface ValidationFileResult {
   isValid: boolean;
   errorMessage?: string;
 }
+
+export interface CardConfig {
+  titleCard: string;
+  useData: () => {
+    data: any;
+    isLoading: boolean;
+    error: Error | null;
+  };
+  getSummary: (data: any) => {
+    total: number;
+    version: string;
+  };
+  getOperatorCount: (data: any, op: string) => number;
+  nav: {
+    update: string;
+    search: string;
+    history: string;
+  };
+  downloadName: string;
+}
