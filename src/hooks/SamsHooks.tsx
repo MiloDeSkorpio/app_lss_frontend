@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
-import type { SearchResult, VersionsParams } from '../types.ts'
+import type { SearchResult, VersionsParams } from '../types/index.ts'
 
 
 // Ejemplo para obtener datos (GET)
