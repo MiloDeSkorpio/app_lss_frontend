@@ -5,10 +5,8 @@ import App from './App'
 import CardsView from './pages/CardsView'
 import TransactionView from './pages/TransactionView'
 import SecurityView from './pages/SecurityView'
-import SamsCVSearch from './pages/sams/SamsCVSearch'
-import SamsCVVersions from './pages/sams/SamsCVVersions'
-import SamsSearch from './pages/sams/SamsSearch'
-import SamsVersions from './pages/sams/SamsVersions'
+import GenericSearchView from './pages/sams/GenericSearchView'
+import GenericVersionsView from './pages/sams/GenericVersionsView'
 import GenericUpdateView from './pages/sams/GenericUpdateView'
 
 const router = createBrowserRouter([
@@ -34,27 +32,27 @@ const router = createBrowserRouter([
   },
   {
     path: "sams/search-cv",
-    element: <SamsCVSearch />,
+    element: <GenericSearchView />,
   },
   {
     path: "sams/search",
-    element: <SamsSearch />,
+    element: <GenericSearchView />,
   },
   {
     path: "sams/search-inv",
-    element: <SamsSearch />,
+    element: <GenericSearchView />,
   },
   {
     path: "sams/versions-cv",
-    element: <SamsCVVersions />,
+    element: <GenericVersionsView />,
   },
   {
     path: "sams/versions",
-    element: <SamsVersions />,
+    element: <GenericVersionsView />,
   },
   {
     path: "sams/versions-inv",
-    element: <SamsVersions />,
+    element: <GenericVersionsView />,
   },
   {
     path: "tarjetas",
