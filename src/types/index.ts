@@ -52,7 +52,7 @@ export interface validationResult {
   success: boolean
   newVersion: number
   currentVersion: number
-  currentVersionCount: number
+  currentRecordsCount: number
   newRecordsCount: number
   newRecordsVersion: SearchResult[]
   altasDuplicadas: any[]
@@ -87,6 +87,31 @@ export type VersionDataRecord = {
 
 export type CardData = VersionDataRecord[];
 
+// New interfaces for nested configurations
+export interface UpdateConfig {
+  title: string;
+  useValidate: () => any; // Consider more specific type if possible
+  useUpload: () => any; // Consider more specific type if possible
+}
+
+export interface SearchConfig {
+  title: string;
+  getById: (hexId: string) => any; // Consider more specific type if possible
+  useUploadList: () => any; // Consider more specific type if possible
+  multerOpt: string;
+  maxFiles: number;
+  multiple: boolean;
+  queryKeyForClean: string;
+}
+
+export interface VersionsConfig {
+  title: string;
+  getResume: () => any; // Consider more specific type if possible
+  useCompareVersions: () => any; // Consider more specific type if possible
+  useRestoreVersion: () => any; // Consider more specific type if possible
+  fileName: string;
+}
+
 export interface CardConfig {
   titleCard: string;
   useData: () => {
@@ -105,9 +130,25 @@ export interface CardConfig {
     history: string;
   };
   downloadName: string;
-  update?: {
-    title: string;
-    useValidate: () => any; // Leaving these as any for now unless we refactor them too
-    useUpload: () => any;
-  };
+  update?: UpdateConfig; // Use the new interface
+  search?: SearchConfig; // Use the new interface
+  versions?: VersionsConfig; // Use the new interface
 }
+
+export interface MainRouteConfig {
+  title: string;
+  cards: {
+    [key: string]: CardConfig;
+  };
+  queryKey?: string;
+  validate?: string;
+  upload?: string;
+  download?: string;
+  getById?: string;
+  getSamsByFile?: string;
+  compareVersions?: string;
+  restoreVersion?: string;
+  downloadDiferences?: string;
+}
+
+export type UseRouteAwareApiReturn = MainRouteConfig | CardConfig | null;
