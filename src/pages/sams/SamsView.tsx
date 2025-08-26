@@ -55,7 +55,6 @@ const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => 
 
 const SamsView = () => {
   const routeConfig = useRouteAwareApi()
-
   if (!routeConfig || !routeConfig.cards) {
     return <div>Cargando configuración de la ruta...</div>
   }
@@ -66,7 +65,7 @@ const SamsView = () => {
     <div className="space-y-4">
       <h1 className="font-bold">{title}</h1>
       <div className="flex flex-wrap space-x-2">
-        {Object.values(cards).map((config: CardConfig) => ( // Also typing the config here for full safety
+        {(Object.values(cards) as CardConfig[]).map((config) => ( 
           <OperatorCardFromConfig
             key={config.titleCard}
             cardConfig={config}
