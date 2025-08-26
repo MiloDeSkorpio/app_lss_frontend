@@ -1,128 +1,78 @@
 import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV } from "../../hooks/SamsHooks"
-import {  handleDownloadWL } from "../../utils/FileHelpers"
+import { handleDownloadWL } from "../../utils/FileHelpers"
+import { useRouteAwareApi } from "../../hooks/useRouteAwareApi"
+import type { CardConfig } from "../../types"
+
+
+// Define the props type for the sub-component
+interface OperatorCardFromConfigProps {
+  cardConfig: CardConfig
+}
+
+// Sub-component to manage state and logic for each card from the configuration
+const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => {
+  const navigate = useNavigate()
+  const { data, isLoading, error } = cardConfig.useData()
+  const { total, version } = cardConfig.getSummary(data)
+
+  // A more sophisticated loading/error handling strategy could be implemented here
+  if (isLoading) return <div>Cargando {cardConfig.titleCard}...</div>
+  if (error) return <div>Error al cargar {cardConfig.titleCard}.</div>
+
+  return (
+    <OperatorCard
+      title={cardConfig.titleCard}
+      lastVersion={version}
+      totalRecords={total}
+      operators={[
+        { label: "STE", value: cardConfig.getOperatorCount(data, "3C") + cardConfig.getOperatorCount(data, "5A") },
+        { label: "STC", value: cardConfig.getOperatorCount(data, "32") },
+        {
+          label: "MB",
+          value:
+            cardConfig.getOperatorCount(data, "01") +
+            cardConfig.getOperatorCount(data, "02") +
+            cardConfig.getOperatorCount(data, "03") +
+            cardConfig.getOperatorCount(data, "04") +
+            cardConfig.getOperatorCount(data, "05") +
+            cardConfig.getOperatorCount(data, "06") +
+            cardConfig.getOperatorCount(data, "07"),
+        },
+        { label: "ORT", value: cardConfig.getOperatorCount(data, "15") },
+        { label: "RTP", value: cardConfig.getOperatorCount(data, "46") },
+      ]}
+      onDownload={(e) => {
+        e.preventDefault()
+        handleDownloadWL(data, cardConfig.downloadName)
+      }}
+      onUpdate={() => navigate(cardConfig.nav.update)}
+      onSearch={() => navigate(cardConfig.nav.search)}
+      onHistory={() => navigate(cardConfig.nav.history)}
+    />
+  )
+}
 
 const SamsView = () => {
-  const navigate = useNavigate()
-  
-  const { data: samsCV, isLoading, error } = getLatestVersionWLCV()
-  const totalSAMSCV = samsCV?.length || 0
-  const lastVersionCV = samsCV?.[0]?.version || "N/A"
+  const routeConfig = useRouteAwareApi()
 
-  const { data: samsWL} = getLatestVersionWL()
-  const totalSAMS = samsWL?.length || 0
-  const lastVersion = samsWL?.[0]?.version || "N/A"
+  if (!routeConfig || !routeConfig.cards) {
+    return <div>Cargando configuración de la ruta...</div>
+  }
 
-  const { data: samsInv} = getLatestVersionInv()
-  const totalSAMSInv = samsInv?.length || 0
-  const lastFecha = samsInv?.[0]?.fecha_produccion || "N/A"
+  const { title, cards } = routeConfig
 
-  
-  const countOperatorCV = (op: string) =>
-    samsCV?.filter((s: { operator: string }) => s.operator === op).length || 0
-  const countOperator = (op: string) =>
-    samsWL?.filter((s: { operator: string }) => s.operator === op).length || 0
-  const countOperatorInv = (op: string) =>
-    samsInv?.filter((s: { provider_code: string }) => s.provider_code === op).length || 0
-
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
   return (
     <div className="space-y-4">
-      <h1 className="font-bold">SAMS</h1>
+      <h1 className="font-bold">{title}</h1>
       <div className="flex flex-wrap space-x-2">
-        <OperatorCard
-          title="Lista Blanca CV"
-          lastVersion={lastVersionCV}
-          totalRecords={totalSAMSCV}
-          operators={[
-            { label: "STE", value: countOperatorCV("3C") + countOperatorCV("5A") },
-            { label: "STC", value: countOperatorCV("32") },
-            {
-              label: "MB",
-              value:
-                countOperatorCV("01") +
-                countOperatorCV("02") +
-                countOperatorCV("03") +
-                countOperatorCV("04") +
-                countOperatorCV("05") +
-                countOperatorCV("06") +
-                countOperatorCV("07"),
-            },
-            { label: "ORT", value: countOperatorCV("15") },
-            { label: "RTP", value: countOperatorCV("46") },
-          ]}
-          onDownload={(e) => {
-            e.preventDefault()
-            handleDownloadWL(samsCV,'listablanca_cv')
-          }}
-          onUpdate={() => navigate("/sams/update-cv")}
-          onSearch={() => navigate("/sams/search-cv")}
-          onHistory={() => navigate("/sams/versions-cv")}
-        />
-        <OperatorCard
-          title="Lista Blanca"
-          lastVersion={lastVersion}
-          totalRecords={totalSAMS}
-          operators={[
-            { label: "STE", value: countOperator("3C") + countOperator("5A") },
-            { label: "STC", value: countOperator("32") },
-            {
-              label: "MB",
-              value:
-                countOperator("01") +
-                countOperator("02") +
-                countOperator("03") +
-                countOperator("04") +
-                countOperator("05") +
-                countOperator("06") +
-                countOperator("07"),
-            },
-            { label: "ORT", value: countOperator("15") },
-            { label: "RTP", value: countOperator("46") },
-          ]}
-          onDownload={(e) => {
-            e.preventDefault()
-            handleDownloadWL(samsWL,'listablanca')
-          }}
-          onUpdate={() => navigate("/sams/update")}
-          onSearch={() => navigate("/sams/search")}
-          onHistory={() => navigate("/sams/versions")}
-        />
-        <OperatorCard
-          title="Inventario de SAMS"
-          lastVersion={lastFecha}
-          totalRecords={totalSAMSInv}
-          operators={[
-            { label: "STE", value: countOperatorInv("3C") + countOperatorInv("5A") },
-            { label: "STC", value: countOperatorInv("32") },
-            {
-              label: "MB",
-              value:
-                countOperatorInv("01") +
-                countOperatorInv("02") +
-                countOperatorInv("03") +
-                countOperatorInv("04") +
-                countOperatorInv("05") +
-                countOperatorInv("06") +
-                countOperatorInv("07"),
-            },
-            { label: "ORT", value: countOperatorInv("15") },
-            { label: "RTP", value: countOperatorInv("46") },
-          ]}
-          onDownload={(e) => {
-            e.preventDefault()
-            handleDownloadWL(samsInv,'inventario')
-          }}
-          onUpdate={() => navigate("/sams/update")}
-          onSearch={() => navigate("/sams/search")}
-          onHistory={() => navigate("/sams/versions")}
-        />
-
-        
+        {Object.values(cards).map((config: CardConfig) => ( // Also typing the config here for full safety
+          <OperatorCardFromConfig
+            key={config.titleCard}
+            cardConfig={config}
+          />
+        ))}
       </div>
-      
     </div>
   )
 }
