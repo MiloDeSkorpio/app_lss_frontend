@@ -76,22 +76,38 @@ export interface ValidationFileResult {
   errorMessage?: string;
 }
 
+// A generic type for the records returned by the list/version hooks
+export type VersionDataRecord = {
+  version?: number | string;
+  operator?: string;
+  fecha_produccion?: string;
+  provider_code?: string;
+  [key: string]: any;
+};
+
+export type CardData = VersionDataRecord[];
+
 export interface CardConfig {
   titleCard: string;
   useData: () => {
-    data: any;
+    data: CardData | undefined; // data can be undefined while loading
     isLoading: boolean;
     error: Error | null;
   };
-  getSummary: (data: any) => {
+  getSummary: (data: CardData | undefined) => {
     total: number;
     version: string;
   };
-  getOperatorCount: (data: any, op: string) => number;
+  getOperatorCount: (data: CardData | undefined, op: string) => number;
   nav: {
     update: string;
     search: string;
     history: string;
   };
   downloadName: string;
+  update?: {
+    title: string;
+    useValidate: () => any; // Leaving these as any for now unless we refactor them too
+    useUpload: () => any;
+  };
 }
