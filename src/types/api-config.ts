@@ -1,5 +1,5 @@
 import type { CardData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate } from "../hooks/SamsHooks";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -20,11 +20,6 @@ export const API_CONFIGS = {
           history: "/sams/versions-cv"
         },
         downloadName: 'listablanca_cv',
-        update: {
-          title: "Actualización de CV",
-          useValidate: useValidateCV,
-          useUpload: useUploadCV,
-        }
       },
       samsWL: {
         titleCard: 'Lista Blanca CL',
@@ -41,11 +36,6 @@ export const API_CONFIGS = {
           history: "/sams/versions"
         },
         downloadName: 'listablanca',
-        update: {
-          title: "Actualización de CL",
-          useValidate: useValidate,
-          useUpload: useUploadWL,
-        }
       },
       samsInv: {
         titleCard: 'Inventario',
@@ -62,12 +52,88 @@ export const API_CONFIGS = {
           history: "/sams/versions-inv"
         },
         downloadName: 'inventario',
-        update: {
-          title: "Actualización de Inventario",
-          useValidate: useValidate,
-          useUpload: useUploadWL,
-        }
       },
     }
+  },
+  '/sams/update-cv': {
+    update: {
+      title: "Actualización de CV",
+      useValidate: useValidateCV,
+      useUpload: useUploadCV,
+    }
+  },
+  '/sams/update': {
+    update: {
+      title: "Actualización de CL",
+      useValidate: useValidate,
+      useUpload: useUploadWL,
+    }
+  },
+  '/sams/update-inv': {
+    update: {
+      title: "Actualización de Inventario",
+      useValidate: useValidateCV,
+      useUpload: useUploadCV,
+    }
+  },
+  '/sams/search-cv': {
+    search: {
+      title: "Buscar SAMS CV",
+      getById: getSamCVByHexId,
+      useUploadList: useUploadListCV,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      queryKeyForClean: "samcv",
+    }
+  },
+  '/sams/search': {
+    search: {
+      title: "Buscar SAMS",
+      getById: getSamByHexId,
+      useUploadList: useUploadListWl,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      queryKeyForClean: "sam",
+    }
+  },
+  '/sams/search-inv': {
+    search: {
+      title: "Buscar SAMS General",
+      getById: getSamByHexId,
+      useUploadList: useUploadListWl,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      queryKeyForClean: "sam",
+    }
+  },
+  '/sams/versions-cv': {
+    versions: {
+      title: "Control de Versiones SAMS CV",
+      getResume: getResumeCV,
+      useCompareVersions: useCompareVersionsCV,
+      useRestoreVersion: useRestoreVersionCV,
+      fileName: "listablanca_sams_cv",
+    }
+  },
+  '/sams/versions': {
+    versions: {
+      title: "Control de Versiones SAMS",
+      getResume: getResume,
+      useCompareVersions: useCompareVersions,
+      useRestoreVersion: useRestoreVersion,
+      fileName: "listablanca_sams",
+    }
+  },
+  '/sams/versions-inv': {
+    versions: {
+      title: "Control de Versiones SAMS",
+      getResume: getResume,
+      useCompareVersions: useCompareVersions,
+      useRestoreVersion: useRestoreVersion,
+      fileName: "listablanca_sams",
+    }
   }
-}
+};
