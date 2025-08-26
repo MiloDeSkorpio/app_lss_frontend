@@ -16,7 +16,6 @@ const router = createBrowserRouter([
   {
     path: "",
     element: <App />,
-    // errorElement: <ErrorPage />,
   },
   {
     path: "sams",
@@ -31,6 +30,10 @@ const router = createBrowserRouter([
     element: <SamsUpdate />,
   },
   {
+    path: "sams/update-inv",
+    element: <SamsUpdate />,
+  },
+  {
     path: "sams/search-cv",
     element: <SamsCVSearch />,
   },
@@ -39,11 +42,19 @@ const router = createBrowserRouter([
     element: <SamsSearch />,
   },
   {
+    path: "sams/search-inv",
+    element: <SamsSearch />,
+  },
+  {
     path: "sams/versions-cv",
     element: <SamsCVVersions />,
   },
   {
     path: "sams/versions",
+    element: <SamsVersions />,
+  },
+  {
+    path: "sams/versions-inv",
     element: <SamsVersions />,
   },
   {
