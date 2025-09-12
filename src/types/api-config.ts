@@ -1,5 +1,6 @@
 import type { CardData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
+import { getLatestVersionBL } from "../hooks/CardHooks"
 
 export const API_CONFIGS = {
   '/sams': {
@@ -135,5 +136,27 @@ export const API_CONFIGS = {
       useRestoreVersion: useRestoreVersion,
       fileName: "listablanca_sams",
     }
+  },
+  '/tarjetas':{
+    title: 'Administración de Tarjetas',
+    cards: {
+      blacklist: {
+        titleCard: 'Lista Negra',
+        useData: getLatestVersionBL,
+        getSummary: (data: CardData | undefined) => ({
+          total: data?.length || 0,
+          version: data?.[0]?.version_ln || "N/A",
+        }),
+        getOperatorCount: (data: CardData | undefined, op: string) =>
+          data?.filter((s) => s.operator === op).length || 0,
+        nav: {
+          update: "/tarjetas/update-cv",
+          search: "/sams/search-cv",
+          history: "/sams/versions-cv"
+        },
+        downloadName: 'listablanca_cv',
+      }
+    }
+
   }
 };
