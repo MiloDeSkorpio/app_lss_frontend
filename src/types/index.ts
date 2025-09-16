@@ -83,9 +83,16 @@ export type VersionDataRecord = {
   fecha_produccion?: string;
   provider_code?: string;
   [key: string]: any;
-};
+}
 
-export type CardData = VersionDataRecord[];
+export type CardData = VersionDataRecord[]
+
+export type VersionDataLNRecord = {
+  totalRecords?: number 
+  lastVersion?: string
+}
+
+export type CardLNData = VersionDataLNRecord
 
 // New interfaces for nested configurations
 export interface UpdateConfig {
@@ -134,6 +141,27 @@ export interface CardConfig {
   search?: SearchConfig; // Use the new interface
   versions?: VersionsConfig; // Use the new interface
 }
+export interface CardLNConfig {
+  titleCard: string;
+  useData: () => {
+    data: CardLNData | undefined; // data can be undefined while loading
+    isLoading: boolean;
+    error: Error | null;
+  };
+  getSummary: (data: CardLNData | undefined) => {
+    total: number;
+    version: string;
+  };
+  nav: {
+    update: string;
+    search: string;
+    history: string;
+  };
+  downloadName: string;
+  update?: UpdateConfig; // Use the new interface
+  search?: SearchConfig; // Use the new interface
+  versions?: VersionsConfig; // Use the new interface
+}
 
 export interface MainRouteConfig {
   title: string;
@@ -152,3 +180,13 @@ export interface MainRouteConfig {
 }
 
 export type UseRouteAwareApiReturn = MainRouteConfig | CardConfig | null;
+
+export interface ResumeCardProps {
+  title: string
+  lastVersion: string
+  totalRecords: number
+  onDownload?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onUpdate?: () => void
+  onSearch?: () => void
+  onHistory?: () => void
+}
