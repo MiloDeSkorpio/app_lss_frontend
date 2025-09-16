@@ -10,3 +10,12 @@ export const getLatestVersionBL = () => {
     }
   })
 }
+export const getResumeLastVersion = () => {
+  return useQuery({
+    queryKey: ['blacklist'],
+    queryFn: async () => {
+      const response = await apiClient.get('/blacklist/resume-last-ver')
+      return response.data
+    }
+  })
+}
