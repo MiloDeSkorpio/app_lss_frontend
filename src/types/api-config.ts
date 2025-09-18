@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getResumeLastVersion } from "../hooks/CardHooks"
+import { getResumeLastVersion, useValidateLN } from "../hooks/CardHooks"
 
 export const API_CONFIGS = {
   '/sams': {
@@ -155,6 +155,12 @@ export const API_CONFIGS = {
         downloadName: 'listanegra_tarjetas',
       }
     }
-
+  },
+  '/tarjetas/update-ln': {
+    update: {
+      title: "Actualización de CV",
+      useValidate: useValidateLN,
+      useUpload: useUploadCV,
+    }
   }
-};
+}
