@@ -59,6 +59,10 @@ const router = createBrowserRouter([
     element: <CardsView />,
   },
   {
+    path: "tarjetas/update-ln",
+    element: <GenericUpdateView />,
+  },
+  {
     path: "listas-seguridad",
     element: <SecurityView />,
   },
