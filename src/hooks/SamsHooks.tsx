@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
-import type { SearchResult, VersionsParams } from '../types/index.ts'
-
+import type { ListCVPayload, SearchResult, VersionsParams } from '../types/index.ts'
 
 // Ejemplo para obtener datos (GET)
 export const getLatestVersionWLCV = () => {
@@ -77,12 +76,6 @@ export const getLatestVersionInv = () => {
 }
 
 // Ejemplo para enviar datos (POST)
-export type ListCVPayload = {
-  altasValidas: any[],
-  bajasValidas: any[],
-  cambiosValidos: any[]
-}
-
 export const useUploadCV = () => {
   return useMutation({
     mutationFn: async (payload: ListCVPayload) => {
