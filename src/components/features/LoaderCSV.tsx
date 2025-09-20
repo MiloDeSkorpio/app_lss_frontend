@@ -5,14 +5,14 @@ import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
 import { validateFileNameWithDetails } from "../../utils/FileHelpers"
 import { ErrorModal } from "../common/ErrorModal"
-import type { ValidationError, validationResult } from "../../types"
+import type { uploadPayload, ValidationError, validationLNResult, validationResult } from "../../types"
 import ShowInfo from "../common/ShowInfo"
-import type { ListCVPayload } from "../../hooks/SamsHooks"
 import { useLocation } from "react-router-dom"
+import ShowInfoBL from "../common/ShowInfoBL"
 
 type LoaderCSVProps = {
   validateMutation: UseMutationResult<any, unknown, FormData>
-  uploadMutation: UseMutationResult<any, unknown, ListCVPayload>
+  uploadMutation: UseMutationResult<any, unknown, uploadPayload>
   multerOpt: string
   maxFiles: number
   multiple: boolean
@@ -29,14 +29,14 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
   const [modalErrors, setModalErrors] = useState<ValidationError[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const [modalInfo, setModalInfo] = useState<validationResult[]>([])
+  const [modalInfo, setModalInfo] = useState<validationResult[] | validationLNResult[]>([])
   const [isModalIOpen, setIsModalIOpen] = useState(false)
 
   const showErrorModal = (errors: ValidationError[]) => {
     setModalErrors(errors)
     setIsModalOpen(true)
   }
-  const showModalInfo = (data: validationResult[]) => {
+  const showModalInfo = (data: validationResult[] | validationLNResult[]) => {
     setModalInfo(data)
     setIsModalIOpen(true)
   }
@@ -267,12 +267,22 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
         errorsF={modalErrors}
         onClose={() => setIsModalOpen(false)}
       />
-      <ShowInfo
-        isOpen={isModalIOpen}
-        uploadMutation={uploadMutation}
-        data={modalInfo}
-        onClose={() => setIsModalIOpen(false)}
-      />
+      {location.pathname.includes('sams') && (
+        <ShowInfo
+          isOpen={isModalIOpen}
+          uploadMutation={uploadMutation}
+          data={modalInfo as validationResult[]}
+          onClose={() => setIsModalIOpen(false)}
+        />
+      )}
+      {location.pathname.includes('tarjetas') && (
+        <ShowInfoBL
+          isOpen={isModalIOpen}
+          uploadMutation={uploadMutation}
+          data={modalInfo as validationLNResult[]}
+          onClose={() => setIsModalIOpen(false)}
+        />
+      )}
     </>
   )
 }
