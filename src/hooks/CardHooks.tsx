@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import apiClient from "../services/apiClient"
+import type { ListLNPayload } from "../types"
 
 export const getLatestVersionBL = () => {
   return useQuery({
@@ -25,6 +26,18 @@ export const useValidateLN = () => {
       const response = await apiClient.post('/blacklist/validate', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    }
+  })
+}
+export const useUploadLN = () => {
+  return useMutation({
+    mutationFn: async (payload: ListLNPayload) => {
+      const response = await apiClient.post('/blacklist/new-version', payload, {
+        headers: {
+          'Content-Type': 'application/json',
         },
       })
       return response.data
