@@ -48,6 +48,7 @@ export type CompareVersionsData = {
   cambiosRes: number
   bajasRes: number
 }
+export type validationProps = validationResult[] | validationLNResult[]
 export interface validationResult {
   success: boolean
   newVersion: number
@@ -61,6 +62,16 @@ export interface validationResult {
   bajasValidas: any[]
   cambiosValidos: any[]
   altasValidas: any[]
+}
+export interface validationLNResult {
+  success: boolean
+  newVersion: number
+  currentVersion: any[]
+  currentVersionCount: number
+  newRecordsCount: number
+  altasFinal: any[]
+  bajasFinal: any[]
+  resultsByOrg: any[]
 }
 export interface ValidationErrorItem {
   message?: string
@@ -94,6 +105,16 @@ export type VersionDataLNRecord = {
 
 export type CardLNData = VersionDataLNRecord
 
+export type ListCVPayload = {
+  altasValidas: any[],
+  bajasValidas: any[],
+  cambiosValidos: any[]
+}
+export type ListLNPayload = {
+  altasValidas: any[],
+  bajasValidas: any[]
+}
+export type uploadPayload = ListCVPayload | ListLNPayload
 // New interfaces for nested configurations
 export interface UpdateConfig {
   title: string;
