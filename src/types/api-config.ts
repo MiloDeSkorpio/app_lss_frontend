@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getResumeLastVersion, useValidateLN } from "../hooks/CardHooks"
+import { getResumeLastVersion, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 
 export const API_CONFIGS = {
   '/sams': {
@@ -160,7 +160,7 @@ export const API_CONFIGS = {
     update: {
       title: "Actualización de CV",
       useValidate: useValidateLN,
-      useUpload: useUploadCV,
+      useUpload: useUploadLN,
     }
   }
 }
