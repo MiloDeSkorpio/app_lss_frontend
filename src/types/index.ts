@@ -68,6 +68,7 @@ export interface validationLNResult {
   newVersion: number
   currentVersion: any[]
   currentVersionCount: number
+  newVersionRecordsCount: number
   newRecordsCount: number
   altasFinal: any[]
   bajasFinal: any[]
@@ -83,17 +84,17 @@ export interface ValidationError {
 }
 
 export interface ValidationFileResult {
-  isValid: boolean;
-  errorMessage?: string;
+  isValid: boolean
+  errorMessage?: string
 }
 
 // A generic type for the records returned by the list/version hooks
 export type VersionDataRecord = {
-  version?: number | string;
-  operator?: string;
-  fecha_produccion?: string;
-  provider_code?: string;
-  [key: string]: any;
+  version?: number | string
+  operator?: string
+  fecha_produccion?: string
+  provider_code?: string
+  [key: string]: any
 }
 
 export type CardData = VersionDataRecord[]
@@ -117,90 +118,90 @@ export type ListLNPayload = {
 export type uploadPayload = ListCVPayload | ListLNPayload
 // New interfaces for nested configurations
 export interface UpdateConfig {
-  title: string;
-  useValidate: () => any; // Consider more specific type if possible
-  useUpload: () => any; // Consider more specific type if possible
+  title: string
+  useValidate: () => any // Consider more specific type if possible
+  useUpload: () => any // Consider more specific type if possible
 }
 
 export interface SearchConfig {
-  title: string;
-  getById: (hexId: string) => any; // Consider more specific type if possible
-  useUploadList: () => any; // Consider more specific type if possible
-  multerOpt: string;
-  maxFiles: number;
-  multiple: boolean;
-  queryKeyForClean: string;
+  title: string
+  getById: (hexId: string) => any // Consider more specific type if possible
+  useUploadList: () => any // Consider more specific type if possible
+  multerOpt: string
+  maxFiles: number
+  multiple: boolean
+  queryKeyForClean: string
 }
 
 export interface VersionsConfig {
-  title: string;
-  getResume: () => any; // Consider more specific type if possible
-  useCompareVersions: () => any; // Consider more specific type if possible
-  useRestoreVersion: () => any; // Consider more specific type if possible
-  fileName: string;
+  title: string
+  getResume: () => any // Consider more specific type if possible
+  useCompareVersions: () => any // Consider more specific type if possible
+  useRestoreVersion: () => any // Consider more specific type if possible
+  fileName: string
 }
 
 export interface CardConfig {
-  titleCard: string;
+  titleCard: string
   useData: () => {
-    data: CardData | undefined; // data can be undefined while loading
-    isLoading: boolean;
-    error: Error | null;
-  };
+    data: CardData | undefined // data can be undefined while loading
+    isLoading: boolean
+    error: Error | null
+  }
   getSummary: (data: CardData | undefined) => {
-    total: number;
-    version: string;
-  };
-  getOperatorCount: (data: CardData | undefined, op: string) => number;
+    total: number
+    version: string
+  }
+  getOperatorCount: (data: CardData | undefined, op: string) => number
   nav: {
-    update: string;
-    search: string;
-    history: string;
-  };
-  downloadName: string;
-  update?: UpdateConfig; // Use the new interface
-  search?: SearchConfig; // Use the new interface
-  versions?: VersionsConfig; // Use the new interface
+    update: string
+    search: string
+    history: string
+  }
+  downloadName: string
+  update?: UpdateConfig // Use the new interface
+  search?: SearchConfig // Use the new interface
+  versions?: VersionsConfig // Use the new interface
 }
 export interface CardLNConfig {
-  titleCard: string;
+  titleCard: string
   useData: () => {
-    data: CardLNData | undefined; // data can be undefined while loading
-    isLoading: boolean;
-    error: Error | null;
-  };
+    data: CardLNData | undefined // data can be undefined while loading
+    isLoading: boolean
+    error: Error | null
+  }
   getSummary: (data: CardLNData | undefined) => {
-    total: number;
-    version: string;
-  };
+    total: number
+    version: string
+  }
   nav: {
-    update: string;
-    search: string;
-    history: string;
-  };
-  downloadName: string;
-  update?: UpdateConfig; // Use the new interface
-  search?: SearchConfig; // Use the new interface
-  versions?: VersionsConfig; // Use the new interface
+    update: string
+    search: string
+    history: string
+  }
+  downloadName: string
+  update?: UpdateConfig // Use the new interface
+  search?: SearchConfig // Use the new interface
+  versions?: VersionsConfig // Use the new interface
 }
 
 export interface MainRouteConfig {
-  title: string;
+  title: string
   cards: {
-    [key: string]: CardConfig;
-  };
-  queryKey?: string;
-  validate?: string;
-  upload?: string;
-  download?: string;
-  getById?: string;
-  getSamsByFile?: string;
-  compareVersions?: string;
-  restoreVersion?: string;
-  downloadDiferences?: string;
+    [key: string]: CardConfig
+  }
+  queryKey?: string
+  validate?: string
+  upload?: string
+  download?: string
+  getById?: string
+  getSamsByFile?: string
+  compareVersions?: string
+  restoreVersion?: string
+  downloadDiferences?: string
 }
 
-export type UseRouteAwareApiReturn = MainRouteConfig | CardConfig | null;
+export type UseRouteAwareApiReturn = MainRouteConfig | CardConfig | null
 
 export interface ResumeCardProps {
   title: string
