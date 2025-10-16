@@ -2,22 +2,18 @@ import LoaderCSV from "../../components/features/LoaderCSV"
 import { useRouteAwareApi } from "../../hooks/useRouteAwareApi"
 
 const GenericUpdateView = () => {
-  const config = useRouteAwareApi();
-  // Type guard to ensure 'config' is a CardConfig and has the 'update' property
+  const config = useRouteAwareApi()
+
   if (!config || !('update' in config) || !config.update) {
-    console.log("GenericUpdateView - Config check failed.", config);
-    return <div>Error: Configuración de actualización no encontrada para esta ruta.</div>;
+    return <div>Error: Configuración de actualización no encontrada para esta ruta.</div>
   }
+  const { title, useValidate, useUpload } = config.update
+  const validateMutation = useValidate()
+  const uploadMutation = useUpload()
 
-  console.log("GenericUpdateView - config after check:", config);
-
-  const { title, useValidate, useUpload } = config.update;
-  const validateMutation = useValidate();
-  const uploadMutation = useUpload();
-
-  const multerOpt = "csvFiles";
-  const maxFiles = 15;
-  const multiple = true;
+  const multerOpt = "csvFiles"
+  const maxFiles = 15
+  const multiple = true
 
   return (
     <div className="container mx-auto p-4">
@@ -30,7 +26,7 @@ const GenericUpdateView = () => {
         multiple={multiple}
       />
     </div>
-  );
-};
+  )
+}
 
-export default GenericUpdateView;
+export default GenericUpdateView
