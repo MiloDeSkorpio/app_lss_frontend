@@ -16,6 +16,7 @@ interface ShowInfoBLProps {
 const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {
   if (!isOpen) return null
   const result = data[0]
+  console.log(result)
   const dataFinal = [result.altasFinal, result.bajasFinal]
   const resumeByOrg = result.resultsByOrg
   const navigate = useNavigate()
@@ -49,7 +50,7 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
         <div className="space-y-1.5 my-2">
           <div className="flex justify-center space-x-3">
             <p>Registros Version <span className="font-semibold">{result.currentVersion}</span>: <span className="font-semibold">{result.currentVersionCount}</span></p>
-            <p>Registros Version <span className="font-semibold">{result.newVersion}</span>: <span className="font-semibold">{result.newRecordsCount}</span></p>
+            <p>Registros Version <span className="font-semibold">{result.newVersion}</span>: <span className="font-semibold">{result.newVersionRecordsCount}</span></p>
           </div>
           <div className="flex justify-center space-x-3">
             <p>Altas: <span className="font-semibold">{totalAltas}</span></p>
@@ -57,7 +58,7 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
           </div>
         </div>
         <div className="grid grid-cols-3">
-          {resumeByOrg.map((organismo,) => (
+          {resumeByOrg.map((organismo) => (
             <OrganismoLNRes
               organismoData={organismo}
             />
