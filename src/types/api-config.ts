@@ -158,7 +158,7 @@ export const API_CONFIGS = {
   },
   '/tarjetas/update-ln': {
     update: {
-      title: "Actualización de CV",
+      title: "Actualización de LN",
       useValidate: useValidateLN,
       useUpload: useUploadLN,
     }
