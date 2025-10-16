@@ -52,7 +52,6 @@ export const validateFileNameWithDetails = (
 
     const isValid = patternConfig.regex.test(filename)
 
-    console.log(isValid)
     return {
       isValid,
       errorMessage: isValid ? undefined :
