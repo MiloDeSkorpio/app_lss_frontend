@@ -17,17 +17,17 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
   if (!isOpen) return null
   const result = data[0]
   console.log(result)
-  const dataFinal = [result.altasFinal, result.bajasFinal]
+  const {altasFinal, bajasFinal} = result
   const resumeByOrg = result.resultsByOrg
   const navigate = useNavigate()
-  const totalAltas = result.altasFinal.length
-  const totalBajas = result.bajasFinal.length
+  const totalAltas = altasFinal.length
+  const totalBajas = bajasFinal.length
 
   const handleUpload = () => {
     uploadMutation.mutate(
       {
-        altasValidas: dataFinal[0],
-        bajasValidas: dataFinal[1]
+        altasValidas: altasFinal,
+        bajasValidas: bajasFinal
       },
       {
         onSuccess: () => {
@@ -69,14 +69,25 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
             <div>
               <button
                 onClick={handleUpload}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                disabled={uploadMutation.isPending}
+                className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
+              ? "bg-green-300 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+              }`}
               >
-                Actualizar Versión
+                {uploadMutation.isPending ? "Actualizando..." : "Actualizar Versión"}
+                
               </button>
             </div>
           )}
           <div>
-            <button onClick={onClose} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+            <button 
+            onClick={onClose}
+            disabled={uploadMutation.isPending} 
+            className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
+              ? "bg-red-300 cursor-not-allowed"
+              : "bg-red-600 hover:bg-red-700"
+              }`}>
               Cancelar
             </button>
           </div>
