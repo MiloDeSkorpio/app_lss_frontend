@@ -3,6 +3,7 @@ import type { ListLNPayload, validationLNResult } from "../../types"
 import { notify } from "../../utils/notifications"
 import type { UseMutationResult } from "@tanstack/react-query"
 import OrganismoLNRes from "./OrganismoLNRes"
+import { getCurrentDateTime } from "../../utils/FileHelpers"
 
 
 interface ShowInfoBLProps {
@@ -16,9 +17,7 @@ interface ShowInfoBLProps {
 const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {
   if (!isOpen) return null
   const result = data[0]
-  console.log(result)
-  const {altasFinal, bajasFinal} = result
-  const resumeByOrg = result.resultsByOrg
+  const { altasFinal, bajasFinal, resultsByOrg, newVersion } = result
   const navigate = useNavigate()
   const totalAltas = altasFinal.length
   const totalBajas = bajasFinal.length
@@ -32,7 +31,78 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
       {
         onSuccess: () => {
           notify.success('Nueva Version Creada con Exito!')
-          navigate('/tarjetas')
+          const dateTime = getCurrentDateTime()
+          const resumenPorOrg = resultsByOrg
+            .map((orgObj) => {
+              const orgKey = Object.keys(orgObj)[0]
+              const data = orgObj[orgKey]
+
+              const totalAltas = data.altasValidas?.length || 0
+              const totalDuplicadas = data.altasDuplicadas?.length || 0
+              const totalInactivas = data.altasInactivas?.length || 0
+              const totalBajas = data.bajasValidas?.length || 0
+              const totalBajasinStolen = data.bajasInStolen?.length || 0
+              const totalBajasInactivas = data.bajasInactivas?.length || 0
+              const totalBajasSinReg = data.bajasSinRegistro?.length || 0
+
+              // 🧠 Construir bloque dinámico solo con valores > 0
+              const bloque = [
+                `Organización: ${orgKey.toUpperCase()}`,
+                '',
+                totalAltas > 0 && `Altas válidas: ${totalAltas}`,
+                totalDuplicadas > 0 && `Altas duplicadas: ${totalDuplicadas}`,
+                totalInactivas > 0 && `Altas inactivas: ${totalInactivas}`,
+                totalBajas > 0 && `Bajas válidas: ${totalBajas}`,
+                totalBajasinStolen > 0 && `Bajas Robadas: ${totalBajasinStolen}`,
+                totalBajasInactivas > 0 && `Bajas inactivas: ${totalBajasInactivas}`,
+                totalBajasSinReg > 0 && `Bajas sin registro: ${totalBajasSinReg}`
+              ]
+                // Eliminar valores "false" o "undefined"
+                .filter(Boolean)
+                .join('\n')
+
+              // 🔹 Solo mostrar organizaciones con al menos un valor distinto de cero
+              const totalGeneral =
+                totalAltas +
+                totalDuplicadas +
+                totalInactivas +
+                totalBajas +
+                totalBajasinStolen +
+                totalBajasInactivas +
+                totalBajasSinReg
+
+              if (totalGeneral === 0) return null 
+
+              return bloque
+            })
+
+            .filter(Boolean)
+            .join('\n-------------------------------------\n')
+
+          const resumen = [
+            `📅 Fecha: ${new Date().toLocaleString()}`,
+            `✅ Nueva versión ${newVersion} creada exitosamente`,
+            '',
+            `Altas realizadas: ${altasFinal.length}`,
+            `Bajas realizadas: ${bajasFinal.length}`,
+            '',
+            resumenPorOrg
+          ].join('\n')
+
+          // 💾 Crear y descargar archivo .txt
+          const blob = new Blob([resumen], { type: 'text/plain;charset=utf-8' })
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `resumen_version_${newVersion}_${dateTime}.txt`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(url)
+
+          setTimeout(() => {
+            navigate('/tarjetas') 
+          }, 1500)
         },
         onError: (error) => {
           console.error(error)
@@ -58,7 +128,7 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
           </div>
         </div>
         <div className="grid grid-cols-3">
-          {resumeByOrg.map((organismo) => (
+          {resultsByOrg.map((organismo) => (
             <OrganismoLNRes
               organismoData={organismo}
             />
@@ -71,23 +141,22 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
                 onClick={handleUpload}
                 disabled={uploadMutation.isPending}
                 className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
-              ? "bg-green-300 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
-              }`}
+                  ? "bg-green-300 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+                  }`}
               >
                 {uploadMutation.isPending ? "Actualizando..." : "Actualizar Versión"}
-                
               </button>
             </div>
           )}
           <div>
-            <button 
-            onClick={onClose}
-            disabled={uploadMutation.isPending} 
-            className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
-              ? "bg-red-300 cursor-not-allowed"
-              : "bg-red-600 hover:bg-red-700"
-              }`}>
+            <button
+              onClick={onClose}
+              disabled={uploadMutation.isPending}
+              className={`w-full py-2 px-4 rounded-md text-white font-medium ${uploadMutation.isPending
+                ? "bg-red-300 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-700"
+                }`}>
               Cancelar
             </button>
           </div>
@@ -97,4 +166,4 @@ const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Ver
   )
 }
 
-export default ShowInfoBL;
+export default ShowInfoBL
