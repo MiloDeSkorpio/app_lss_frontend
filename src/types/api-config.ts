@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getResumeLastVersion, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import { getCardByHexId, getResumeLastVersion, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 
 export const API_CONFIGS = {
   '/sams': {
@@ -149,8 +149,8 @@ export const API_CONFIGS = {
         }),
         nav: {
           update: "/tarjetas/update-ln",
-          search: "/sams/search-cv",
-          history: "/sams/versions-cv"
+          search: "/tarjetas/search-card",
+          history: "/tarjetas/versions-cv"
         },
         downloadName: 'listanegra_tarjetas',
       }
@@ -161,6 +161,17 @@ export const API_CONFIGS = {
       title: "Actualización de LN",
       useValidate: useValidateLN,
       useUpload: useUploadLN,
+    }
+  },
+  '/tarjetas/search-card': {
+    search: {
+      title: "Buscar Tarjeta",
+      getById: getCardByHexId,
+      useUploadList: useUploadListWl,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      queryKeyForClean: "card",
     }
   }
 }
