@@ -63,6 +63,10 @@ const router = createBrowserRouter([
     element: <GenericUpdateView />,
   },
   {
+    path: "tarjetas/search-card",
+    element: <GenericSearchView />,
+  },
+  {
     path: "listas-seguridad",
     element: <SecurityView />,
   },
