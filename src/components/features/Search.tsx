@@ -7,24 +7,24 @@ interface ResComponentsProps {
   onClean: () => void
   showAllFields?: boolean // Nuevo prop para controlar los campos
 }
-
 const Search = ({
   data,
   isLoading,
   error,
   showAllFields = true,
 }: ResComponentsProps) => {
-  const results = Array.isArray(data) ? data : data ? [data] : []
-
-  // Configuración dinámica de columnas
-  const columns = [
-    { key: "SERIAL_HEX", label: "Serial HEX", show: true },
-    { key: "OPERATOR", label: "Operador", show: true },
-    { key: "LOCATION_ID", label: "Location ID", show: showAllFields },
-    { key: "ESTACION", label: "Estación", show: showAllFields },
-    { key: "ESTADO", label: "Estado", show: showAllFields },
-  ]
-
+  const results = Array.isArray(data)
+    ? data.map(item => item.data) 
+    : data && data.data
+    ? [data.data]
+    : []
+const columns = results.length > 0
+  ? Object.keys(results[0]).map(key => ({
+      key,
+      label: key.replace(/_/g, ' '),
+      show: true
+    }))
+  : []
   if (isLoading) {
     return <p className="text-gray-500 text-center mt-6">Buscando...</p>
   }
@@ -43,9 +43,8 @@ const Search = ({
 
   return (
     <div
-      className={`border rounded mt-4 max-h-[250px] overflow-auto ${
-        showAllFields ? "min-w-full" : "w-[250px]"
-      }`}
+      className={`border rounded mt-4 max-h-[250px] overflow-auto ${showAllFields ? "min-w-full" : "w-[250px]"
+        }`}
     >
       <div className="inline-block min-w-full">
         <table className="min-w-full">
@@ -72,13 +71,12 @@ const Search = ({
                     column.show && (
                       <td
                         key={`${index}-${column.key}`}
-                        className={`px-6 py-4 whitespace-nowrap text-sm ${
-                          column.key === "SERIAL_HEX"
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${column.key === "SERIAL_HEX"
                             ? "text-black"
                             : "text-gray-500"
-                        }`}
+                          }`}
                       >
-                        {item[column.key as keyof SearchResult]}
+                        {(item as any)[column.key]}
                       </td>
                     )
                 )}
