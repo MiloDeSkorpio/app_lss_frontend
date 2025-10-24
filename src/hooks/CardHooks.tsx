@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import apiClient from "../services/apiClient"
-import type { ListLNPayload } from "../types"
+import type { ListLNPayload, SearchResult } from "../types"
 
 export const getLatestVersionBL = () => {
   return useQuery({
@@ -42,5 +42,18 @@ export const useUploadLN = () => {
       })
       return response.data
     }
+  })
+}
+export const getCardByHexId = (hexId: string) => {
+  return useQuery<SearchResult, Error>({
+    queryKey: ['card', hexId],
+    queryFn: async () => {
+      const response = await apiClient.get('/blacklist/find-card', {
+        params: { hexId }
+      })
+      return response.data
+    },
+    enabled: !!hexId, 
+    retry: false,
   })
 }
