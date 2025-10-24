@@ -1,7 +1,7 @@
 /**
  * Valores disponibles para el campo ESTADO en modelos con altas y bajas
  */
-type VersionStatus = 'ACTIVO' | 'INACTIVO'
+// type VersionStatus = 'ACTIVO' | 'INACTIVO'
 /**
  * Representa el resultado de búsqueda de un registro de WL en el sistema
  * @property SERIAL_DEC - Número de serie en formato decimal
@@ -14,14 +14,8 @@ type VersionStatus = 'ACTIVO' | 'INACTIVO'
  * @property ESTADO - Estado actual del registro de WL (ACTIVO/INACTIVO)
  */
 export type SearchResult = {
-  SERIAL_DEC: number
-  SERIAL_HEX: string
-  CONFIG: string
-  OPERATOR: string
-  LOCATION_ID: string
-  ESTACION: string
-  VERSION: number
-  ESTADO: VersionStatus
+  success: boolean
+  data: any[]
 }
 /**
  * Valores disponibles para el campo ESTADO en modelos con altas y bajas
