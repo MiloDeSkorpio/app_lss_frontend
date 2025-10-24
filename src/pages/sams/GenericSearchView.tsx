@@ -15,10 +15,8 @@ const GenericSearchView = () => {
   }
 
   const { title, getById, useUploadList, multerOpt, maxFiles, multiple, queryKeyForClean } = config.search
-
   const [searchTerm, setSearchTerm] = useState("")
   const [activeSearchTerm, setActiveSearchTerm] = useState("")
-
   const { data: singleData, isLoading, error } = getById(activeSearchTerm)
   const uploadMutation = useUploadList()
   const multipleData = uploadMutation.data
@@ -53,7 +51,6 @@ const GenericSearchView = () => {
       notify.error("Formato inválido. Debe ser 8 caracteres (ej: AE10D275, AE10D276).")
       return
     }
-
     if (!searchTerm.trim()) return
     setActiveSearchTerm(searchTerm.trim())
   }
