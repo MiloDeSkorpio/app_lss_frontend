@@ -2,6 +2,9 @@
  * Valores disponibles para el campo ESTADO en modelos con altas y bajas
  */
 // type VersionStatus = 'ACTIVO' | 'INACTIVO'
+
+import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query"
+
 /**
  * Representa el resultado de búsqueda de un registro de WL en el sistema
  * @property SERIAL_DEC - Número de serie en formato decimal
@@ -111,20 +114,29 @@ export type ListLNPayload = {
 }
 export type uploadPayload = ListCVPayload | ListLNPayload
 // New interfaces for nested configurations
+export interface SuccessModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  data: any; 
+  uploadMutation: UseMutationResult<any, unknown, any, unknown>
+}
 export interface UpdateConfig {
   title: string
-  useValidate: () => any // Consider more specific type if possible
-  useUpload: () => any // Consider more specific type if possible
+  useValidate: () => any 
+  useUpload: () => any 
+  localFileValidator: (file: File) => { isValid: boolean, errorMessage?: string };
+  SuccessComponent: React.ComponentType<SuccessModalProps>;
 }
 
 export interface SearchConfig {
-  title: string
-  getById: (hexId: string) => any // Consider more specific type if possible
-  useUploadList: () => any // Consider more specific type if possible
-  multerOpt: string
-  maxFiles: number
-  multiple: boolean
-  queryKeyForClean: string
+  title: string;
+  getById: (id: string) => UseQueryResult<any, unknown>;
+  useUploadList: () => UseMutationResult<any, unknown, FormData, unknown>;
+  multerOpt: string;
+  maxFiles: number;
+  multiple: boolean;
+  queryKeyForClean: string;
+  localFileValidator: (file: File) => { isValid: boolean, errorMessage?: string };
 }
 
 export interface VersionsConfig {
@@ -205,4 +217,25 @@ export interface ResumeCardProps {
   onUpdate?: () => void
   onSearch?: () => void
   onHistory?: () => void
+}
+
+export type ExtendedFile = File & {
+  preview: string
+}
+
+// 1. Props AHORA SON GENÉRICAS
+export type LoaderCSVProps<TValidationResult> = {
+  // Recibe la mutación. El tipo de éxito es genérico
+  validateMutation: UseMutationResult<TValidationResult, unknown, FormData>
+  
+  // Recibe una FUNCIÓN para la validación local (síncrona)
+  validateLocalFile: (file: File) => { isValid: boolean, errorMessage?: string }
+  
+  // Función que el padre ejecutará en un onSuccess
+  onValidationSuccess: (data: TValidationResult) => void
+  
+  // Props que ya eran genéricas
+  multerOpt: string
+  maxFiles: number
+  multiple: boolean
 }
