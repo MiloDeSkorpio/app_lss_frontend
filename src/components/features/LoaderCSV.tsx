@@ -1,50 +1,35 @@
-import type { UseMutationResult } from "@tanstack/react-query"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { notify } from "../../utils/notifications"
 import type { AxiosError } from "axios"
-import { validateFileNameWithDetails } from "../../utils/FileHelpers"
 import { ErrorModal } from "../common/ErrorModal"
-import type { uploadPayload, ValidationError, validationLNResult, validationResult } from "../../types"
-import ShowInfo from "../common/ShowInfo"
-import { useLocation } from "react-router-dom"
-import ShowInfoBL from "../common/ShowInfoBL"
+import type { ExtendedFile, LoaderCSVProps, ValidationError } from "../../types"
 
-type LoaderCSVProps = {
-  validateMutation: UseMutationResult<any, unknown, FormData>
-  uploadMutation: UseMutationResult<any, unknown, uploadPayload>
-  multerOpt: string
-  maxFiles: number
-  multiple: boolean
-}
-type ExtendedFile = File & {
-  preview: string
-}
 
-const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation, multerOpt, maxFiles, multiple }) => {
-  const location = useLocation()
+export function LoaderCSV<TValidationResult>({
+  validateMutation,
+  validateLocalFile,
+  onValidationSuccess,
+  multerOpt,
+  maxFiles,
+  multiple
+}: LoaderCSVProps<TValidationResult>) {
+
   const [files, setFiles] = useState<ExtendedFile[]>([])
   const [, setError] = useState<string | null>(null)
 
   const [modalErrors, setModalErrors] = useState<ValidationError[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const [modalInfo, setModalInfo] = useState<validationResult[] | validationLNResult[]>([])
-  const [isModalIOpen, setIsModalIOpen] = useState(false)
-
   const showErrorModal = (errors: ValidationError[]) => {
     setModalErrors(errors)
     setIsModalOpen(true)
   }
-  const showModalInfo = (data: validationResult[] | validationLNResult[]) => {
-    setModalInfo(data)
-    setIsModalIOpen(true)
-  }
+
   const onDropValidated = (acceptedFiles: File[]) => {
-    // Validar todos los archivos de una vez
     const filesWithValidation = acceptedFiles.map(file => ({
       file,
-      validation: validateFileNameWithDetails(file.name, location.pathname)
+      validation: validateLocalFile(file)
     }))
 
     const validFiles = filesWithValidation
@@ -54,12 +39,10 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
     const invalidFiles = filesWithValidation
       .filter(({ validation }) => !validation.isValid)
 
-    // Mostrar errores detallados
     if (invalidFiles.length > 0) {
       invalidFiles.forEach(({ file, validation }) => {
         notify.error(`"${file.name}": ${validation.errorMessage}`)
       })
-
       setError(`${invalidFiles.length} archivo(s) con formato incorrecto`)
     }
 
@@ -70,17 +53,17 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
 
   const handleUpload = () => {
     if (files.length > 0) {
-      // Crear FormData y agregar todos los archivos
       const formData = new FormData()
       files.forEach((file) => {
-        formData.append(`${multerOpt}`, file) // csvFiles es el mismo nombre que se utiliza en el backend desde multer "upload.array('csvFiles')"
+        formData.append(`${multerOpt}`, file)
       })
-      // Usar mutationFn directamente si está configurada para FormData
+
+
       validateMutation.mutate(formData, {
         onSuccess: (data) => {
-          showModalInfo(data)
           notify.success(`${files.length} archivo(s) validado(s) correctamente`)
           setFiles([])
+          onValidationSuccess(data)
         },
         onError: (error) => {
           const err = error as AxiosError<any>
@@ -102,21 +85,16 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
         preview: URL.createObjectURL(file),
       })
     )
-
     setFiles((prevFiles) => [...prevFiles, ...mappedFiles])
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onDropValidated,
-    accept: {
-      "text/csv": [".csv"],
-      "application/vnd.ms-excel": [".csv"], // Para compatibilidad con versiones antiguas
-      "text/plain": [".csv"], // Algunos sistemas pueden reportar CSV como text/plain
-    },
+    accept: { /* ... */ },
     maxFiles: maxFiles,
     multiple: multiple,
   })
-  // Limpia las URLs de vista previa para evitar fugas de memoria
+
   useEffect(() => {
     return () => {
       files.forEach((file) => URL.revokeObjectURL(file.preview))
@@ -267,22 +245,6 @@ const LoaderCSV: React.FC<LoaderCSVProps> = ({ validateMutation, uploadMutation,
         errorsF={modalErrors}
         onClose={() => setIsModalOpen(false)}
       />
-      {location.pathname.includes('sams') && (
-        <ShowInfo
-          isOpen={isModalIOpen}
-          uploadMutation={uploadMutation}
-          data={modalInfo as validationResult[]}
-          onClose={() => setIsModalIOpen(false)}
-        />
-      )}
-      {location.pathname.includes('tarjetas') && (
-        <ShowInfoBL
-          isOpen={isModalIOpen}
-          uploadMutation={uploadMutation}
-          data={modalInfo as validationLNResult[]}
-          onClose={() => setIsModalIOpen(false)}
-        />
-      )}
     </>
   )
 }
