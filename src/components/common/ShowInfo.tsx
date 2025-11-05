@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import type { uploadPayload, validationResult } from "../../types"
+import type {  validationResult } from "../../types"
 import OrganismoRes from "./OrganismoRes"
 import { notify } from "../../utils/notifications"
 import type { UseMutationResult } from "@tanstack/react-query"
@@ -10,7 +10,7 @@ interface ShowInfoProps {
   title?: string
   data: validationResult[]
   onClose: () => void
-  uploadMutation: UseMutationResult<any, unknown, uploadPayload>
+  uploadMutation: UseMutationResult<any, unknown, any, unknown>
 }
 // Define any props needed for ShowInfo component
 const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {

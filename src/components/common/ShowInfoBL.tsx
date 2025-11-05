@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import type { ListLNPayload, validationLNResult } from "../../types"
+import type {  validationLNResult } from "../../types"
 import { notify } from "../../utils/notifications"
 import type { UseMutationResult } from "@tanstack/react-query"
 import OrganismoLNRes from "./OrganismoLNRes"
@@ -11,7 +11,7 @@ interface ShowInfoBLProps {
   title?: string
   data: validationLNResult[]
   onClose: () => void
-  uploadMutation: UseMutationResult<any, unknown, ListLNPayload>
+  uploadMutation: UseMutationResult<any, unknown, any, unknown>
 }
 // Define any props needed for ShowInfoBL component
 const ShowInfoBL: React.FC<ShowInfoBLProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {
