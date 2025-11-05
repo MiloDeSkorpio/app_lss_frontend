@@ -1,6 +1,9 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
 import { getCardByHexId, getResumeLastVersion, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import { validateFileNameWithDetails } from "../utils/FileHelpers";
+import ShowInfoBL from "../components/common/ShowInfoBL";
+import ShowInfo from "../components/common/ShowInfo";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -61,6 +64,8 @@ export const API_CONFIGS = {
       title: "Actualización de CV",
       useValidate: useValidateCV,
       useUpload: useUploadCV,
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
+      SuccessComponent: ShowInfo
     }
   },
   '/sams/update': {
@@ -68,6 +73,8 @@ export const API_CONFIGS = {
       title: "Actualización de CL",
       useValidate: useValidate,
       useUpload: useUploadWL,
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
+      SuccessComponent: ShowInfo
     }
   },
   '/sams/update-inv': {
@@ -75,6 +82,8 @@ export const API_CONFIGS = {
       title: "Actualización de Inventario",
       useValidate: useValidateCV,
       useUpload: useUploadCV,
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
+      SuccessComponent: ShowInfo
     }
   },
   '/sams/search-cv': {
@@ -86,6 +95,7 @@ export const API_CONFIGS = {
       maxFiles: 1,
       multiple: false,
       queryKeyForClean: "samcv",
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
     }
   },
   '/sams/search': {
@@ -97,6 +107,7 @@ export const API_CONFIGS = {
       maxFiles: 1,
       multiple: false,
       queryKeyForClean: "sam",
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
     }
   },
   '/sams/search-inv': {
@@ -108,6 +119,7 @@ export const API_CONFIGS = {
       maxFiles: 1,
       multiple: false,
       queryKeyForClean: "sam",
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
     }
   },
   '/sams/versions-cv': {
@@ -161,6 +173,8 @@ export const API_CONFIGS = {
       title: "Actualización de LN",
       useValidate: useValidateLN,
       useUpload: useUploadLN,
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
+      SuccessComponent: ShowInfoBL
     }
   },
   '/tarjetas/search-card': {
@@ -172,6 +186,7 @@ export const API_CONFIGS = {
       maxFiles: 1,
       multiple: false,
       queryKeyForClean: "card",
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
     }
   }
 }
