@@ -18,7 +18,7 @@ import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query"
  */
 export type SearchResult = {
   success: boolean
-  data: any[]
+  data: any[] | SearchSummary
 }
 /**
  * Valores disponibles para el campo ESTADO en modelos con altas y bajas
@@ -223,19 +223,16 @@ export type ExtendedFile = File & {
   preview: string
 }
 
-// 1. Props AHORA SON GENÉRICAS
 export type LoaderCSVProps<TValidationResult> = {
-  // Recibe la mutación. El tipo de éxito es genérico
   validateMutation: UseMutationResult<TValidationResult, unknown, FormData>
-  
-  // Recibe una FUNCIÓN para la validación local (síncrona)
   validateLocalFile: (file: File) => { isValid: boolean, errorMessage?: string }
-  
-  // Función que el padre ejecutará en un onSuccess
   onValidationSuccess: (data: TValidationResult) => void
-  
-  // Props que ya eran genéricas
   multerOpt: string
   maxFiles: number
   multiple: boolean
+}
+
+export type SearchSummary = {
+  recordsFound: any[]
+  recordsNotFound: string[]
 }
