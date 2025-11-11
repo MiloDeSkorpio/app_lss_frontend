@@ -1,30 +1,36 @@
-import type { SearchResult } from "../../types"
+import type { SearchResult, SearchSummary } from "../../types"
 
 interface ResComponentsProps {
   data?: SearchResult | SearchResult[]
   isLoading: boolean
   error: Error | null
   onClean: () => void
-  showAllFields?: boolean // Nuevo prop para controlar los campos
+  showAllFields?: boolean
+  summary: SearchSummary | null
 }
 const Search = ({
   data,
   isLoading,
   error,
   showAllFields = true,
+  onClean,
+  summary
 }: ResComponentsProps) => {
   const results = Array.isArray(data)
-    ? data.map(item => item.data) 
-    : data && data.data
-    ? [data.data]
-    : []
-const columns = results.length > 0
-  ? Object.keys(results[0]).map(key => ({
+    ? data.map(item => item)
+    : data?.data
+      ? [data.data]
+      : []
+  console.log(results)
+  console.log(summary)
+
+  const columns = results.length > 0
+    ? Object.keys(results[0]).map(key => ({
       key,
       label: key.replace(/_/g, ' '),
       show: true
     }))
-  : []
+    : []
   if (isLoading) {
     return <p className="text-gray-500 text-center mt-6">Buscando...</p>
   }
@@ -72,8 +78,8 @@ const columns = results.length > 0
                       <td
                         key={`${index}-${column.key}`}
                         className={`px-6 py-4 whitespace-nowrap text-sm ${column.key === "SERIAL_HEX"
-                            ? "text-black"
-                            : "text-gray-500"
+                          ? "text-black"
+                          : "text-gray-500"
                           }`}
                       >
                         {(item as any)[column.key]}
@@ -85,6 +91,12 @@ const columns = results.length > 0
           </tbody>
         </table>
       </div>
+      <button
+        onClick={onClean}
+        className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Nueva Búsqueda
+      </button>
     </div>
   )
 }
