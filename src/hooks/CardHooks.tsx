@@ -57,3 +57,15 @@ export const getCardByHexId = (hexId: string) => {
     retry: false,
   })
 }
+export const useUploadListBL = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/blacklist/cards-bl', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }) 
+      return response.data
+    }
+  })
+}
