@@ -4,38 +4,56 @@ import LoaderCSV from "../../components/features/LoaderCSV"
 import { useQueryClient } from "@tanstack/react-query"
 import { notify } from "../../utils/notifications"
 import { useRouteAwareApi } from "../../hooks/useRouteAwareApi"
+import type { SearchResult } from "../../types"
 
 const GenericSearchView = () => {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [activeSearchTerm, setActiveSearchTerm] = useState("")
+  
   const queryClient = useQueryClient()
   const config = useRouteAwareApi()
 
-  // Type guard to ensure 'config' is a CardConfig and has the 'search' property
+  const {
+    title,
+    getById,
+    useUploadList,
+    multerOpt,
+    maxFiles,
+    multiple,
+    queryKeyForClean,
+    localFileValidator
+  } = config.search 
+
   if (!config || !('search' in config) || !config.search) {
     return <div>Error: Configuración de búsqueda no encontrada para esta ruta.</div>
   }
 
-  const { title, getById, useUploadList, multerOpt, maxFiles, multiple, queryKeyForClean } = config.search
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeSearchTerm, setActiveSearchTerm] = useState("")
   const { data: singleData, isLoading, error } = getById(activeSearchTerm)
   const uploadMutation = useUploadList()
-  const multipleData = uploadMutation.data
+  const multipleData: SearchResult | undefined = uploadMutation.data
 
+  if(error){
+    notify.error(error?.response?.data?.message)
+    queryClient.removeQueries({
+        queryKey: [queryKeyForClean, activeSearchTerm],
+      })
+      setActiveSearchTerm("")
+      setSearchTerm("")
+      return
+  }
   const allResults = useMemo(() => {
-    if (multipleData) return multipleData
+    if (multipleData) return multipleData.data.recordsFound
     if (singleData) return [singleData]
     return []
   }, [singleData, multipleData])
-
+  console.log(allResults)
   const handleClean = () => {
-    if (singleData) {
+    if (allResults) {
       queryClient.removeQueries({
         queryKey: [queryKeyForClean, activeSearchTerm],
       })
       setActiveSearchTerm("")
       setSearchTerm("")
-    }
-    if (allResults) {
       uploadMutation.reset()
     }
   }
@@ -46,7 +64,6 @@ const GenericSearchView = () => {
       notify.warning("Ingresa un código hexadecimal.")
       return
     }
-
     if (!hexRegex.test(searchTerm)) {
       notify.error("Formato inválido. Debe ser 8 caracteres (ej: AE10D275, AE10D276).")
       return
@@ -54,7 +71,12 @@ const GenericSearchView = () => {
     if (!searchTerm.trim()) return
     setActiveSearchTerm(searchTerm.trim())
   }
-
+  const handleValidationSuccess = (data: any) => {
+    notify.success('Búsqueda masiva completada.')
+  }
+  const handleLocalFileValidate = (file: File) => {
+    return localFileValidator(file)
+  }
   return (
     <div className="space-y-1.5">
       <h1>{title}</h1>
@@ -64,6 +86,7 @@ const GenericSearchView = () => {
           isLoading={isLoading}
           error={error}
           onClean={handleClean}
+          summary={multipleData ?? null}
         />
       ) : (
         <>
@@ -87,8 +110,10 @@ const GenericSearchView = () => {
               </button>
             </div>
           </div>
-          <LoaderCSV
-            uploadMutation={uploadMutation}
+          <LoaderCSV<any>
+            validateMutation={uploadMutation}
+            onValidationSuccess={handleValidationSuccess}
+            validateLocalFile={handleLocalFileValidate}
             multerOpt={multerOpt}
             maxFiles={maxFiles}
             multiple={multiple}
