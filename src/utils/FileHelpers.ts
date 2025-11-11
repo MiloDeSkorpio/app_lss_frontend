@@ -39,6 +39,10 @@ export const validateFileNameWithDetails = (
       '/sams/search': {
         regex: /^buscar_sams.*\.csv$/,
         example: 'buscar_sams_cualquier_cosa.csv'
+      },
+      'tarjetas/search-card': {
+        regex: /^buscar_cards.*\.csv$/,
+        example: 'buscar_cards_cualquier_cosa.csv'
       }
     }
 
