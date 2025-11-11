@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getCardByHexId, getResumeLastVersion, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import { getCardByHexId, getResumeLastVersion, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
@@ -181,7 +181,7 @@ export const API_CONFIGS = {
     search: {
       title: "Buscar Tarjeta",
       getById: getCardByHexId,
-      useUploadList: useUploadListWl,
+      useUploadList: useUploadListBL,
       multerOpt: "csvFile",
       maxFiles: 1,
       multiple: false,
