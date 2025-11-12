@@ -6,7 +6,7 @@ interface ResComponentsProps {
   error: Error | null
   onClean: () => void
   showAllFields?: boolean
-  summary: SearchSummary | null
+
 }
 const Search = ({
   data,
@@ -14,15 +14,13 @@ const Search = ({
   error,
   showAllFields = true,
   onClean,
-  summary
+  
 }: ResComponentsProps) => {
   const results = Array.isArray(data)
     ? data.map(item => item)
     : data?.data
       ? [data.data]
       : []
-  console.log(results)
-  console.log(summary)
 
   const columns = results.length > 0
     ? Object.keys(results[0]).map(key => ({
