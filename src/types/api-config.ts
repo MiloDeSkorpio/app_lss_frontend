@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getCardByHexId, getResumeLastVersion, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import { getCardByHexId, getResumeBL, getResumeLastVersion, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
@@ -162,7 +162,7 @@ export const API_CONFIGS = {
         nav: {
           update: "/tarjetas/update-ln",
           search: "/tarjetas/search-card",
-          history: "/tarjetas/versions-cv"
+          history: "/tarjetas/versions"
         },
         downloadName: 'listanegra_tarjetas',
       }
@@ -187,6 +187,15 @@ export const API_CONFIGS = {
       multiple: false,
       queryKeyForClean: "card",
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
+    }
+  },
+  '/tarjetas/versions': {
+    versions: {
+      title: "Control de Versiones Blacklist",
+      getResume: getResumeBL,
+      useCompareVersions: useCompareVersionsBL,
+      useRestoreVersion: useRestoreVersionBL,
+      fileName: "listanegra_tarjetas",
     }
   }
 }
