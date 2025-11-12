@@ -303,6 +303,14 @@ export const handleDownloadFileEvent = (data: any, fileName: string) => {
  */
 export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
   const dateTime = getCurrentDateTimeInputs()
+  const hasOperator = dataArray.some(item => "OPERATOR" in item)
+
+  if (!hasOperator) {
+    const altFileName = `${fileName}_${dateTime}.csv`
+    handleDownloadFileEvent(dataArray, altFileName)
+    return 
+  }
+
   const providerCodes = {
     "01": ['01', '02', '03', '04', '05', '06', '07'],
     "5A": ['5A', '3C'],
@@ -310,10 +318,11 @@ export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
     "15": ['15'],
     "46": ['46']
   }
-  Object.entries(providerCodes).forEach(([key, codes]) => {
 
+  Object.entries(providerCodes).forEach(([key, codes]) => {
     const filteredData = dataArray.filter(item =>
-      codes.some(code => String(item.OPERATOR) === String(code)))
+      codes.some(code => String(item.OPERATOR) === String(code))
+    )
 
     if (filteredData.length > 0) {
       const finalFileName = `${fileName}_${key}_${dateTime}.csv`
