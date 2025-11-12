@@ -67,6 +67,10 @@ const router = createBrowserRouter([
     element: <GenericSearchView />,
   },
   {
+    path: "tarjetas/versions",
+    element: <GenericVersionsView />,
+  },
+  {
     path: "listas-seguridad",
     element: <SecurityView />,
   },
