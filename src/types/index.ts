@@ -34,7 +34,10 @@ export interface VersionsParams {
   * @property VERSION - valor de la version
  */
 export interface VersionRecords {
-  VERSION: string
+  VERSION: string 
+}
+export interface VersionLNRecords {
+    version_ln: string 
 }
 
 export type CompareVersionsData = {
