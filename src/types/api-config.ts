@@ -1,6 +1,6 @@
 import type { CardData, CardLNData } from ".";
 import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
-import { getCardByHexId, getResumeBL, getResumeLastVersion, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
@@ -154,10 +154,10 @@ export const API_CONFIGS = {
     cards: {
       blacklist: {
         titleCard: 'Lista Negra',
-        useData: getResumeLastVersion,
+        useData: getLatestVersionBL,
         getSummary: (data: CardLNData | undefined) => ({
-          total: data?.totalRecords || 0,
-          version: data?.lastVersion || "N/A",
+          total: data?.length || 0,
+          version: data?.[0]?.version_ln || "N/A",
         }),
         nav: {
           update: "/tarjetas/update-ln",
