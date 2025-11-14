@@ -39,7 +39,7 @@ const VersionCard: React.FC<VersionCardProps> = ({
   const [currentVers, setCurrentVersion] = useState<number | null>(null)
   const [oldVersion, setOldVersion] = useState<number>(0)
   const [downloadSucces, setDownloadSuccess] = useState(false)
-  
+
   //Estos mutate se pasan como props
   const selectOldDisabled = !currentVers || !!compareData
   const selectCurDisabled = !!compareData
@@ -50,7 +50,11 @@ const VersionCard: React.FC<VersionCardProps> = ({
 
   const filteredOldVersions = useMemo(() => {
     if (!currentVers) return []
-    return previousVersions.filter((v) => Number(v.VERSION) < currentVers)
+
+    return previousVersions.filter((v) => {
+      const versionValue = (v as any).VERSION ?? (v as any).version_ln
+      return Number(versionValue) < Number(currentVers)
+    })
   }, [currentVers, previousVersions])
 
   useEffect(() => {
@@ -79,24 +83,30 @@ const VersionCard: React.FC<VersionCardProps> = ({
 
   const handleRestore = () => {
     restoreVersion(oldVersion)
-    navigate('/sams')
+    navigate('/')
     notify.success('Version restaurada con exito')
   }
 
   const handleDownload = () => {
-    if(!compareData) { return }
-    handleDownloadIfData(
-      compareData.altasData,
-      `${fileName}_altas`
-    )
-    handleDownloadIfData(
-      compareData.cambiosData,
-      `${fileName}_cambios`
-    )
-    handleDownloadIfData(
-      compareData.bajasData,
-      `${fileName}_bajas`
-    )
+    if (!compareData) { return }
+    if (compareData.altasData.length > 0) {
+      handleDownloadIfData(
+        compareData.altasData,
+        `${fileName}_altas_V${currentVers}`
+      )
+    }
+    if (compareData.bajasData.length > 0) {
+      handleDownloadIfData(
+        compareData.bajasData,
+        `${fileName}_bajas_V${currentVers}`
+      )
+    }
+    if (compareData.cambiosData.length > 0) {
+      handleDownloadIfData(
+        compareData.cambiosData,
+        `${fileName}_cambios_V${currentVers}`
+      )
+    }
     setDownloadSuccess(true)
   }
 
@@ -118,11 +128,13 @@ const VersionCard: React.FC<VersionCardProps> = ({
             <span className="font-medium">Altas:</span> {altasRecords}
           </p>
           <p className="font-bold">
-            <span className="font-medium">Cambios:</span> {cambiosRecords}
-          </p>
-          <p className="font-bold">
             <span className="font-medium">Bajas:</span> {bajasRecords}
           </p>
+          {cambiosRecords > 0 && (
+            <p className="font-bold">
+              <span className="font-medium">Cambios:</span> {cambiosRecords}
+            </p>
+          )}
         </div>
       </div>
       {/* Columna de comparación y acciones */}
@@ -177,7 +189,7 @@ const VersionCard: React.FC<VersionCardProps> = ({
       </div>
       {compareData ? (
         <div className=" space-y-1 ">
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 justify-between">
             <div className="space-y-2">
               <h2 className="text-lg font-bold text-blue-700">
                 Altas: {compareData.altasRes}
@@ -202,18 +214,21 @@ const VersionCard: React.FC<VersionCardProps> = ({
                 showAllFields={false}
               />
             </div>
-            <div className="space-y-2">
-              <h2 className="text-lg font-bold text-blue-700">
-                Cambios: {compareData.cambiosRes}
-              </h2>
-              <Search
-                data={compareData.cambiosData}
-                isLoading={false}
-                error={errorCompare}
-                onClean={handleClean}
-                showAllFields={false}
-              />
-            </div>
+            {compareData.cambiosData && (
+
+              <div className="space-y-2">
+                <h2 className="text-lg font-bold text-blue-700">
+                  Cambios: {compareData.cambiosRes}
+                </h2>
+                <Search
+                  data={compareData.cambiosData}
+                  isLoading={false}
+                  error={errorCompare}
+                  onClean={handleClean}
+                  showAllFields={false}
+                />
+              </div>
+            )}
           </div>
         </div>
       ) : (
