@@ -1,4 +1,4 @@
-import type { ValidationFileResult } from "../types";
+import type { CardListData, ProcessedHexData, ValidationFileResult } from "../types";
 import { notify } from "./notifications"
 /**
  * Valida si el nombre de un archivo coincide con alguno de los patrones definidos.
@@ -147,6 +147,16 @@ export const getCurrentDateTime = () => {
 
   return `${year}${month}${day}_${hours}${minutes}${seconds}`
 }
+export const getCurrentDate = () => {
+  const now = new Date()
+
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+
+
+  return `${year}${month}${day}`
+}
 export const getCurrentDateTimeInputs = () => {
   const now = new Date()
 
@@ -201,20 +211,21 @@ export const getCurrentDateTimeInputs = () => {
  *   notify.error("Falló la generación de archivos")
  * }
  */
-export const handleDownloadWL = (data: any, name: string) => {
+export const handleDownloadWL = (data: any, name: string,version: string) => {
   const dateTime = getCurrentDateTime()
 
   // 1. Archivo completo
-  const allData = data.map((item: any) => ({
-    serial_dec: item.serial_dec,
-    serial_hex: item.serial_hex,
-    config: item.config,
-    operator: item.operator,
-    location_id: item.location_id,
-    estacion: item.estacion,
-  }))
-  const fullCSV = convertToCSV(allData)
-  downloadFile(fullCSV, `${dateTime}_${name}_all.csv`, "text/csv")
+  // const allData = data.map((item: any) => ({
+  //   serial_dec: item.serial_dec,
+  //   serial_hex: item.serial_hex,
+  //   config: item.config,
+  //   operator: item.operator,
+  //   location_id: item.location_id,
+  //   estacion: item.estacion,
+  // }))
+  // console.log(allData)
+  // const fullCSV = convertToCSV(allData)
+  // downloadFile(fullCSV, `${dateTime}_${name}_V${version}_all.csv`, "text/csv")
 
   // 2. Archivo solo con serial_dec y serial_hex
   const serialData = data.map((item: any) => ({
@@ -224,7 +235,7 @@ export const handleDownloadWL = (data: any, name: string) => {
   const serialCSV = convertToCSV(serialData)
   downloadFile(
     serialCSV,
-    `${dateTime}_${name}_partial.csv`,
+    `${dateTime}_${name}_V${version}_partial.csv`,
     "text/csv"
   )
 
@@ -233,7 +244,127 @@ export const handleDownloadWL = (data: any, name: string) => {
     serial_hex: item.serial_hex,
   }))
   const hexCSV = convertToCSV(hexOnlyData)
-  downloadFile(hexCSV, `${dateTime}_${name}.csv`, "text/csv")
+  downloadFile(hexCSV, `${dateTime}_${name}_V${version}.csv`, "text/csv")
+  notify.success('Descarga Exitosa!')
+}
+function processHexSequences(data: CardListData[], columnName: string = 'card_serial_number'): ProcessedHexData {
+  const ranges: CardListData[] = [];
+  const individuals: CardListData[] = [];
+
+  if (!data || data.length === 0) {
+    return { ranges, individuals };
+  }
+
+  // 1. Extraer, validar y asociar el objeto original.
+  const processedItems = data
+    .map(originalObject => ({
+      hex: originalObject[columnName],
+      original: originalObject,
+    }))
+    .filter(item => item.hex && typeof item.hex === 'string' && /^[0-9a-fA-F]+$/.test(item.hex))
+    .map(item => ({
+      ...item,
+      intValue: BigInt(`0x${item.hex}`),
+    }))
+    .sort((a, b) => (a.intValue < b.intValue ? -1 : a.intValue > b.intValue ? 1 : 0));
+
+  if (processedItems.length === 0) {
+    console.warn("No se encontraron valores hexadecimales válidos en la columna especificada.");
+    return { ranges, individuals };
+  }
+
+  // 2. Identificar secuencias y valores individuales.
+  let startItem = processedItems[0];
+  let lastItem = processedItems[0];
+
+  for (let i = 1; i < processedItems.length; i++) {
+    const currentItem = processedItems[i];
+
+    // Evitar duplicados
+    if (currentItem.intValue === lastItem.intValue) {
+        continue;
+    }
+
+    if (currentItem.intValue === lastItem.intValue + 1n) {
+      // La secuencia continúa.
+      lastItem = currentItem;
+    } else {
+      // La secuencia se rompe, guardar la anterior.
+      if (startItem.intValue === lastItem.intValue) {
+        individuals.push(startItem.original);
+      } else {
+        const startHex = startItem.hex.toString().toUpperCase().padStart(16, '0');
+        const endHex = lastItem.hex.toString().toUpperCase().padStart(16, '0');
+        
+        const rangeObject: CardListData = {
+          ...startItem.original,
+          card_serial_number: `${startHex}-${endHex}`, // Sobrescribir card_serial_number
+        };
+        ranges.push(rangeObject);
+      }
+      
+      // Iniciar una nueva secuencia.
+      startItem = currentItem;
+      lastItem = currentItem;
+    }
+  }
+
+  // 3. Guardar la última secuencia después de que termine el bucle.
+  if (startItem.intValue === lastItem.intValue) {
+    individuals.push(startItem.original);
+  } else {
+    const startHex = startItem.hex.toString().toUpperCase().padStart(16, '0');
+    const endHex = lastItem.hex.toString().toUpperCase().padStart(16, '0');
+
+    const rangeObject: CardListData = {
+      ...startItem.original,
+      card_serial_number: `${startHex}-${endHex}`, // Sobrescribir card_serial_number
+    };
+    ranges.push(rangeObject);
+  }
+
+  return { ranges, individuals };
+}
+
+export const handleDownloadBL = (data: any, name: string, version: string) => {
+  const dateTime = getCurrentDate()
+
+  // 1. Archivo completo
+  // console.log(data)
+  const allData = data.map((item: any) => ({
+    card_type: item.card_type,
+    card_serial_number: item.card_serial_number,
+    priority: item.priority,
+    blacklisting_date: item.blacklisting_date,
+  }))
+  const fullCSV = convertToCSV(allData)
+  downloadFile(fullCSV, `${dateTime}_${name}_V${version}_general.csv`, "text/csv")
+  const result = processHexSequences(data,'card_serial_number')
+
+  // console.log(result.ranges)
+  // 2. Archivo solo con serial_dec y serial_hex
+  const singles = result.individuals.map((item: any) => ({
+    card_type: item.card_type,
+    card_serial_number: item.card_serial_number,
+    priority: item.priority,
+    blacklisting_date: item.blacklisting_date,
+  }))
+  const serialCSV = convertToCSV(singles)
+  downloadFile(
+    serialCSV,
+    `${dateTime}_${name}_V${version}_mixta_parte1de2.csv`,
+    "text/csv"
+  )
+
+  // 3. Archivo solo con serial_hex
+  const ranges = result.ranges.map((item: any) => ({
+    card_type: item.card_type,
+    card_serial_number: item.card_serial_number,
+    priority: item.priority,
+    blacklisting_date: item.blacklisting_date,
+  }))
+  const hexCSV = convertToCSV(ranges)
+  downloadFile(hexCSV, `${dateTime}_${name}_V${version}_mixta_parte2de2.csv`, "text/csv")
   notify.success('Descarga Exitosa!')
 }
 /**
