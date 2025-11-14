@@ -18,7 +18,6 @@ const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => 
   // A more sophisticated loading/error handling strategy could be implemented here
   if (isLoading) return <div>Cargando {cardConfig.titleCard}...</div>
   if (error) return <div>Error al cargar {cardConfig.titleCard}.</div>
-
   return (
     <OperatorCard
       title={cardConfig.titleCard}
@@ -43,7 +42,7 @@ const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => 
       ]}
       onDownload={(e) => {
         e.preventDefault()
-        handleDownloadWL(data, cardConfig.downloadName)
+        handleDownloadWL(data, cardConfig.downloadName,version)
       }}
       onUpdate={() => navigate(cardConfig.nav.update)}
       onSearch={() => navigate(cardConfig.nav.search)}
