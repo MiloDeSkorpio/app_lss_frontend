@@ -100,11 +100,11 @@ export type VersionDataRecord = {
 export type CardData = VersionDataRecord[]
 
 export type VersionDataLNRecord = {
-  totalRecords?: number 
-  lastVersion?: string
+  total?: number 
+  version_ln?: string
 }
 
-export type CardLNData = VersionDataLNRecord
+export type CardLNData = VersionDataLNRecord[]
 
 export type ListCVPayload = {
   altasValidas: any[],
@@ -238,4 +238,15 @@ export type LoaderCSVProps<TValidationResult> = {
 export type SearchSummary = {
   recordsFound: any[]
   recordsNotFound: string[]
+}
+
+export interface CardListData {
+  card_serial_number: string;
+  [key: string]: any; // Permite otras propiedades en el objeto
+}
+
+
+export interface ProcessedHexData {
+  ranges: string[];
+  individuals: string[];
 }
