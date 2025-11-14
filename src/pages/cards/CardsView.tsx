@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useRouteAwareApi } from "../../hooks/useRouteAwareApi";
 import type { CardLNConfig } from "../../types";
-import { handleDownloadWL } from "../../utils/FileHelpers";
+import { handleDownloadBL } from "../../utils/FileHelpers";
 import { ResumeCard } from "../../components/common/ResumeCard";
 
 interface ResumeCardFromConfigProps {
@@ -23,7 +23,7 @@ const ResumeCardFromConfig = ({ cardLNConfig }: ResumeCardFromConfigProps) => {
       totalRecords={total}
       onDownload={(e) => {
         e.preventDefault()
-        handleDownloadWL(data, cardLNConfig.downloadName)
+        handleDownloadBL(data, cardLNConfig.downloadName,version)
       }}
       onUpdate={() => navigate(cardLNConfig.nav.update)}
       onSearch={() => navigate(cardLNConfig.nav.search)}
