@@ -250,3 +250,16 @@ export interface ProcessedHexData {
   ranges: string[];
   individuals: string[];
 }
+
+export type User = {
+  id: number;
+  email: string;
+  role: string;
+}
+
+export type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
