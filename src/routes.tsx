@@ -12,9 +12,17 @@ import LoginView from './pages/LoginView'
 import DashboardHome from './pages/DashboardHome'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import PrivateRoute from './components/common/PrivateRoute'
+import RegisterView from './pages/RegisterView'
+import VerifyEmailView from './pages/VerifyEmailView'
+import ResendCodeView from './pages/ResendCodeView'
+import ResetPasswordView from './pages/ResetPasswordView'
 
 const router = createBrowserRouter([
   { path: "/login", element: <LoginView /> },
+  { path: "/register", element: <RegisterView /> },
+  { path: "/verify-account", element: <VerifyEmailView /> },
+  { path: "/resend-code-account", element: <ResendCodeView /> },
+  { path: "/recuperar-password", element: <ResetPasswordView /> },
 
   {
     element: <PrivateRoute />,
