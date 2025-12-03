@@ -263,3 +263,22 @@ export type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
+
+export interface VerifyPayload {
+  email: string
+  code: string
+}
+
+export interface ResendPayload {
+  email: string
+}
+
+export interface RequestPayload {
+  email: string
+}
+
+export interface ResetPayload {
+  email: string
+  code: string
+  newPassword: string
+}
