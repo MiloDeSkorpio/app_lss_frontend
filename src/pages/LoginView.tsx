@@ -141,12 +141,15 @@ const LoginView = () => {
           <div className="mt-6">
             <hr className="border-gray-300 mb-4" />
 
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs space-x-2">
               <a href="/register" className="text-gray-600 hover:text-gray-800 transition">
                 ¿No tienes cuenta? Crear una
               </a>
               <a href="/recuperar-password" className="text-gray-600 hover:text-gray-800 transition">
                 Olvidé mi contraseña
+              </a>
+              <a href="/verify-account" className="text-gray-600 hover:text-gray-800 transition">
+                Verifica tu cuenta
               </a>
             </div>
           </div>
