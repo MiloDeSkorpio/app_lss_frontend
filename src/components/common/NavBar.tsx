@@ -3,6 +3,7 @@ import { useAuthContext } from "../../providers/AuthProvider"
 import { useLogout } from "../../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import logo from "../../assets/icoMI_gris.png"
+import { useQueryClient } from "@tanstack/react-query"
 
 const NavBar = () => {
   const { user } = useAuthContext()
@@ -10,9 +11,11 @@ const NavBar = () => {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const queryClient = useQueryClient()
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync()
+      await queryClient.invalidateQueries({ queryKey: ["authUser"] })
       navigate("/login")
     } catch (error: any) {
       console.error("Error al cerrar sesión", error)
