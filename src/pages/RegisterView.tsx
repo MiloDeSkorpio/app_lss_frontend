@@ -2,41 +2,98 @@ import { type FormEvent, useState } from "react"
 import { useRegister } from "../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
+import { notify } from "../utils/notifications"
 
 const RegisterView = () => {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  })
+
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const registerMutation = useRegister()
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value })
+  }
+
+  const validateForm = () => {
+    const errs: string[] = []
+    const { name, email, password, confirmPassword } = form
+
+    if (!name.trim()) errs.push("El campo Nombre es obligatorio")
+
+    if (email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) errs.push("El formato del email no es válido")
+    } else {
+      errs.push("El campo Email es obligatorio")
+    }
+
+    if (password.trim()) {
+      if (password.length < 8)
+        errs.push("La contraseña debe tener al menos 8 caracteres")
+
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&])[A-Za-z\d$@!%*?&]+$/
+      if (!passwordRegex.test(password))
+        errs.push(
+          "La contraseña debe incluir mayúsculas, minúsculas, números y un carácter especial: $ @ ! % * ? &"
+        )
+    } else {
+      errs.push("El campo Contraseña es obligatorio")
+    }
+
+    if (!confirmPassword.trim())
+      errs.push("Es necesario confirmar la contraseña")
+
+    if (password !== confirmPassword)
+      errs.push("Las contraseñas no coinciden")
+
+    return errs
+  }
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setError(null)
+    setErrors([])
 
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden")
+    const validationErrors = validateForm()
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors)
       return
     }
 
     try {
+      const { name, email, password } = form
       await registerMutation.mutateAsync({ name, email, password })
       await queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      notify.success("¡Registro exitoso! Por favor, verifica tu correo.")
       navigate("/verify-account")
     } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Error al registrar el usuario"
-      setError(msg)
+      const backendErrors = err?.response?.data?.errors
+
+      if (Array.isArray(backendErrors)) {
+        const msgs = backendErrors.map((e: any) =>
+          String(Object.values(e.constraints)[0])
+        )
+        setErrors(msgs)
+      } else {
+        setErrors([
+          err?.response?.data?.message || "Error al procesar la petición"
+        ])
+      }
     }
   }
+
+  const inputError = (field: string) =>
+    errors.some((e) => e.toLowerCase().includes(field))
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-900">
@@ -47,29 +104,21 @@ const RegisterView = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-gray-100 py-8 px-6 shadow-xl sm:rounded-2xl sm:px-10 transition-all">
+        <div className="bg-gray-100 py-8 px-6 shadow-xl sm:rounded-2xl sm:px-10">
           <form onSubmit={onSubmit} className="space-y-6">
-
-            {/* ERROR MESSAGE */}
-            {error && (
-              <div className="rounded-md bg-red-100 p-4 border border-red-300">
-                <div className="flex">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <p className="ml-3 text-sm font-medium text-red-900">{error}</p>
-                </div>
+            {/* ERROR LIST */}
+            {errors.length > 0 && (
+              <div className="rounded-md bg-red-100 p-4 border border-red-300 mb-4">
+                <h3 className="text-sm font-medium text-red-800">
+                  Hubo errores en tu registro:
+                </h3>
+                <ul className="mt-2 text-sm text-red-700 list-disc pl-5 space-y-1">
+                  {errors.map((msg) => (
+                    <li key={msg}>{msg}</li>
+                  ))}
+                </ul>
               </div>
             )}
-
             {/* NAME */}
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
@@ -77,17 +126,17 @@ const RegisterView = () => {
               </label>
               <input
                 id="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={form.name}
+                onChange={handleChange}
                 placeholder="Tu nombre completo"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg 
-                  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2
-                  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-700 transition"
+                className={`mt-1 block w-full px-3 py-2 border rounded-lg text-gray-800 sm:text-sm focus:ring-2 transition
+                  ${
+                    inputError("nombre")
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-500"
+                  }`}
               />
             </div>
-
             {/* EMAIL */}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
@@ -96,39 +145,42 @@ const RegisterView = () => {
               <input
                 id="email"
                 type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={form.email}
+                onChange={handleChange}
                 placeholder="tu@ejemplo.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg 
-                  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2
-                  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-700 transition"
+                className={`mt-1 block w-full px-3 py-2 border rounded-lg text-gray-800 sm:text-sm focus:ring-2 transition
+                  ${
+                    inputError("email")
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-500"
+                  }`}
               />
             </div>
-
             {/* PASSWORD */}
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
                 Contraseña
               </label>
-              <div className="mt-1 relative">
+              <div className="relative mt-1">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={form.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg 
-                    shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2
-                    focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-700 transition"
+                  className={`block w-full px-3 py-2 border rounded-lg text-gray-700 sm:text-sm 
+                    focus:ring-2 transition ${
+                      inputError("contraseña")
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-indigo-500"
+                    }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-800"
                 >
-                  {showPassword ? (
+                                    {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -150,24 +202,26 @@ const RegisterView = () => {
               <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700">
                 Confirmar contraseña
               </label>
-              <div className="mt-1 relative">
+              <div className="relative mt-1">
                 <input
                   id="confirmPassword"
                   type={showConfirm ? "text" : "password"}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={form.confirmPassword}
+                  onChange={handleChange}
                   placeholder="••••••••"
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg 
-                    shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2
-                    focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-700 transition"
+                  className={`block w-full px-3 py-2 border rounded-lg text-gray-700 sm:text-sm 
+                    focus:ring-2 transition ${
+                      inputError("contraseña")
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-indigo-500"
+                    }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-800"
                 >
-                  {showConfirm ? (
+                                    {showConfirm ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -188,11 +242,9 @@ const RegisterView = () => {
             <button
               type="submit"
               disabled={registerMutation.isPending}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg 
-                shadow-md text-sm font-semibold text-white bg-indigo-600 
-                hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 
-                focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed
-                transition-all duration-200 hover:scale-[1.02]"
+              className="w-full flex justify-center py-2 px-4 rounded-lg text-sm font-semibold text-white bg-indigo-600 
+                hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                disabled:bg-indigo-300 disabled:cursor-not-allowed transition hover:scale-[1.02]"
             >
               {registerMutation.isPending ? "Registrando..." : "Crear cuenta"}
             </button>
@@ -202,10 +254,13 @@ const RegisterView = () => {
           <div className="mt-6">
             <hr className="border-gray-300 mb-4" />
             <div className="flex items-center justify-between text-xs">
-              <a href="/login" className="text-gray-600 hover:text-gray-800 transition">
+              <a href="/login" className="text-gray-600 hover:text-gray-800">
                 ¿Ya tienes cuenta? Iniciar sesión
               </a>
-              <a href="/recuperar-password" className="text-gray-600 hover:text-gray-800 transition">
+              <a
+                href="/recuperar-password"
+                className="text-gray-600 hover:text-gray-800"
+              >
                 Olvidé mi contraseña
               </a>
             </div>
