@@ -4,6 +4,7 @@ import { useLogout } from "../../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import logo from "../../assets/icoMI_gris.png"
 import { useQueryClient } from "@tanstack/react-query"
+import { notify } from "../../utils/notifications"
 
 const NavBar = () => {
   const { user } = useAuthContext()
@@ -16,6 +17,7 @@ const NavBar = () => {
     try {
       await logoutMutation.mutateAsync()
       await queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      notify.success('¡Cierre de sesión exitoso!')
       navigate("/login")
     } catch (error: any) {
       console.error("Error al cerrar sesión", error)
