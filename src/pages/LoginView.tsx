@@ -2,6 +2,7 @@ import { type FormEvent, useState } from "react"
 import { useLogin } from "../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
+import { notify } from "../utils/notifications"
 
 const LoginView = () => {
   const [email, setEmail] = useState("")
@@ -19,6 +20,7 @@ const LoginView = () => {
     try {
       await loginMutation.mutateAsync({ email, password })
       await queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      notify.success('¡Inicio de sesión exitoso!')
       navigate("/")
     } catch (err: any) {
       const msg =
