@@ -1,32 +1,45 @@
 import { useState, type FormEvent } from "react"
 import { useVerifyEmail } from "../hooks/useAuth"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { notify } from "../utils/notifications"
 
 const VerifyEmailView = () => {
-  const [email, setEmail] = useState("")
+  const location = useLocation()
+  const initialEmail = location.state?.email || ""
+  const [email, setEmail] = useState(initialEmail)
   const [code, setCode] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
 
+  const [errors, setErrors] = useState<string[]>([])
   const verifyMutation = useVerifyEmail()
 
   const navigate = useNavigate()
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setError(null)
-    setSuccess(null)
+    setErrors([])
 
     try {
       await verifyMutation.mutateAsync({ email, code })
-      setSuccess("Correo verificado correctamente")
+      notify.success("Correo verificado correctamente")
       navigate("/login")
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || "Error al verificar correo")
+      const backendErrors = err?.response?.data?.errors
+
+      if (Array.isArray(backendErrors)) {
+        const msgs = backendErrors.map((e: any) =>
+          String(Object.values(e.constraints)[0])
+        )
+        setErrors(msgs)
+      } else {
+        setErrors([
+          err?.response?.data?.message || "Error al procesar la petición"
+        ])
+      }
     }
   }
 
   const handleResend = async () => {
-    navigate("/resend-code-account")
+
+    navigate("/resend-code-account", { state: { email } })
   }
 
   return (
@@ -36,23 +49,30 @@ const VerifyEmailView = () => {
           Verificar correo electrónico
         </h2>
 
-        {error && (
-          <div className="mb-4 p-3 rounded bg-red-100 text-red-800 text-sm">{error}</div>
-        )}
-        {success && (
-          <div className="mb-4 p-3 rounded bg-green-100 text-green-800 text-sm">{success}</div>
+        {errors.length > 0 && (
+          <div className="rounded-md bg-red-100 p-4 border border-red-300 mb-4">
+            <h3 className="text-sm font-medium text-red-800">
+              Hubo errores en tu verificación:
+            </h3>
+            <ul className="mt-2 text-sm text-red-700 list-disc pl-5 space-y-1">
+              {errors.map((msg) => (
+                <li key={msg}>{msg}</li>
+              ))}
+            </ul>
+          </div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
             <input
-            id="email"
+              id="email"
               type="email"
               value={email}
+              readOnly
+              disabled
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@ejemplo.com"
-              required
               className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
             />
           </div>
@@ -60,12 +80,11 @@ const VerifyEmailView = () => {
           <div>
             <label htmlFor="code" className="block text-sm font-medium text-gray-700">Código de verificación</label>
             <input
-            id="code"
+              id="code"
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Ingresa tu código"
-              required
               className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
             />
           </div>

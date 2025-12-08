@@ -75,7 +75,7 @@ const RegisterView = () => {
       await registerMutation.mutateAsync({ name, email, password })
       await queryClient.invalidateQueries({ queryKey: ["authUser"] })
       notify.success("¡Registro exitoso! Por favor, verifica tu correo.")
-      navigate("/verify-account")
+      navigate("/verify-account", { state: { email } })
     } catch (err: any) {
       const backendErrors = err?.response?.data?.errors
 
@@ -130,10 +130,9 @@ const RegisterView = () => {
                 onChange={handleChange}
                 placeholder="Tu nombre completo"
                 className={`mt-1 block w-full px-3 py-2 border rounded-lg text-gray-800 sm:text-sm focus:ring-2 transition
-                  ${
-                    inputError("nombre")
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-indigo-500"
+                  ${inputError("nombre")
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-indigo-500"
                   }`}
               />
             </div>
@@ -149,10 +148,9 @@ const RegisterView = () => {
                 onChange={handleChange}
                 placeholder="tu@ejemplo.com"
                 className={`mt-1 block w-full px-3 py-2 border rounded-lg text-gray-800 sm:text-sm focus:ring-2 transition
-                  ${
-                    inputError("email")
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-indigo-500"
+                  ${inputError("email")
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-indigo-500"
                   }`}
               />
             </div>
@@ -169,10 +167,9 @@ const RegisterView = () => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   className={`block w-full px-3 py-2 border rounded-lg text-gray-700 sm:text-sm 
-                    focus:ring-2 transition ${
-                      inputError("contraseña")
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-indigo-500"
+                    focus:ring-2 transition ${inputError("contraseña")
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-500"
                     }`}
                 />
                 <button
@@ -180,7 +177,7 @@ const RegisterView = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-800"
                 >
-                                    {showPassword ? (
+                  {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -210,10 +207,9 @@ const RegisterView = () => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   className={`block w-full px-3 py-2 border rounded-lg text-gray-700 sm:text-sm 
-                    focus:ring-2 transition ${
-                      inputError("contraseña")
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-indigo-500"
+                    focus:ring-2 transition ${inputError("contraseña")
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-500"
                     }`}
                 />
                 <button
@@ -221,7 +217,7 @@ const RegisterView = () => {
                   onClick={() => setShowConfirm(!showConfirm)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-800"
                 >
-                                    {showConfirm ? (
+                  {showConfirm ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

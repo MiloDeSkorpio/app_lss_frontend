@@ -1,23 +1,24 @@
 import { useState, type FormEvent } from "react"
 import { useResendCode } from "../hooks/useAuth"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { notify } from "../utils/notifications"
 
 const ResendCodeView = () => {
-  const [email, setEmail] = useState("")
+  const location = useLocation()
+  const initialEmail = location.state?.email || ""
+  const [email, setEmail] = useState(initialEmail)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
 
   const resendMutation = useResendCode()
   const navigate = useNavigate()
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
-    setSuccess(null)
 
     try {
       await resendMutation.mutateAsync({ email })
-      setSuccess("Se ha enviado un nuevo código de verificación")
-      navigate("/verify-account")
+      notify.success("Código de verificación reenviado correctamente")
+      navigate("/verify-account", { state: { email } })
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || "Error al reenviar código")
     }
@@ -31,15 +32,16 @@ const ResendCodeView = () => {
         </h2>
 
         {error && <div className="mb-4 p-3 rounded bg-red-100 text-red-800 text-sm">{error}</div>}
-        {success && <div className="mb-4 p-3 rounded bg-green-100 text-green-800 text-sm">{success}</div>}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="code" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
             <input
-            id="code"
+              id="code"
               type="email"
               value={email}
+              readOnly
+              disabled
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@ejemplo.com"
               required
