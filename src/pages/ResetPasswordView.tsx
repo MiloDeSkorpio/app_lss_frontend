@@ -1,6 +1,11 @@
 import { useState, type FormEvent } from "react"
-import { useRequestPasswordReset, useVerifyResetCode, useResetPassword } from "../hooks/useAuth"
+import {
+  useRequestPasswordReset,
+  useVerifyResetCode,
+  useResetPassword
+} from "../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
+import { notify } from "../utils/notifications"
 
 const ResetPasswordView = () => {
   const [email, setEmail] = useState("")
@@ -9,6 +14,8 @@ const ResetPasswordView = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+
+  const [emailSent, setEmailSent] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
 
   const requestMutation = useRequestPasswordReset()
@@ -16,24 +23,24 @@ const ResetPasswordView = () => {
   const resetMutation = useResetPassword()
   const navigate = useNavigate()
 
-  // Paso 1: solicitar código
   const handleRequestCode = async () => {
     setError(null)
-    setSuccess(null)
+
     try {
-      await requestMutation.mutateAsync({ email })
-      setSuccess("Se ha enviado un código de verificación a tu correo")
+      const res = await requestMutation.mutateAsync({ email })
+      notify.success(res.message)
+      setEmailSent(true)     
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || "Error al solicitar código")
     }
   }
 
-  // Paso 2: verificar código
   const handleVerifyCode = async () => {
     setError(null)
     setSuccess(null)
     try {
       await verifyMutation.mutateAsync({ email, code })
+      notify.success("Código verificado")
       setSuccess("Código verificado. Ahora puedes cambiar tu contraseña")
       setIsVerified(true)
     } catch (err: any) {
@@ -41,25 +48,23 @@ const ResetPasswordView = () => {
     }
   }
 
-  // Paso 3: resetear contraseña
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault()
-    setError(null)
-    setSuccess(null)
 
     if (newPassword !== confirmPassword) {
       setError("Las contraseñas no coinciden")
       return
     }
-
     try {
       await resetMutation.mutateAsync({ email, code, newPassword })
-      setSuccess("Contraseña actualizada correctamente")
+      notify.success("Contraseña cambiada exitosamente")
       setEmail("")
       setCode("")
       setNewPassword("")
       setConfirmPassword("")
+      setEmailSent(false)
       setIsVerified(false)
+
       navigate("/login")
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || "Error al cambiar contraseña")
@@ -81,34 +86,36 @@ const ResetPasswordView = () => {
           {/* EMAIL */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
+
             <input
-            id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@ejemplo.com"
               required
-              disabled={isVerified}
-              className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
+              disabled={emailSent || isVerified}
+              className={`mt-1 block w-full px-3 py-2 border rounded-lg sm:text-sm text-gray-700
+                ${emailSent ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "border-gray-300"}`}
             />
           </div>
 
           {/* BOTÓN SOLICITAR CÓDIGO */}
-          {!isVerified && (
+          {!emailSent && (
             <button
               type="button"
               onClick={handleRequestCode}
               disabled={!email || requestMutation.isPending}
-              className="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 disabled:bg-indigo-300 transition"
+              className="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-300 transition"
             >
               {requestMutation.isPending ? "Enviando código..." : "Solicitar código"}
             </button>
           )}
 
-          {/* CÓDIGO */}
-          {!isVerified && (
+          {/* CÓDIGO + BOTÓN VERIFICAR */}
+          {emailSent && !isVerified && (
             <div>
               <label htmlFor="code" className="block text-sm font-medium text-gray-700">Código de verificación</label>
+
               <input
                 id="code"
                 type="text"
@@ -116,13 +123,14 @@ const ResetPasswordView = () => {
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Ingresa el código"
                 required
-                className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 sm:text-sm text-gray-700"
               />
+
               <button
                 type="button"
                 onClick={handleVerifyCode}
                 disabled={!code || verifyMutation.isPending}
-                className="w-full mt-2 py-2 px-4 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 disabled:bg-green-300 transition"
+                className="w-full mt-2 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-300 transition"
               >
                 {verifyMutation.isPending ? "Verificando..." : "Verificar código"}
               </button>
@@ -139,29 +147,27 @@ const ResetPasswordView = () => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
                   required
-                  className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                  className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 sm:text-sm text-gray-700"
                 />
               </div>
 
               <div>
-                <label htmlFor="confPassword" className="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
                 <input
-                  id="confPassword"
+                  id="confirmPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
                   required
-                  className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                  className="mt-1 block w-full px-3 py-2 border rounded-lg border-gray-300 sm:text-sm text-gray-700"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={resetMutation.isPending}
-                className="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 disabled:bg-indigo-300 transition"
+                className="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-300 transition"
               >
                 {resetMutation.isPending ? "Actualizando..." : "Cambiar contraseña"}
               </button>
