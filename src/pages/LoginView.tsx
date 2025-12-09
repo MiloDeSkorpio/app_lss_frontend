@@ -17,6 +17,15 @@ const LoginView = () => {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
+    if (!email.trim()) {
+      setError("El correo es obligatorio")
+      return
+    }
+    if (!password.trim()) {
+      setError("La contraseña es obligatoria")
+      return
+    }
+
     try {
       await loginMutation.mutateAsync({ email, password })
       await queryClient.invalidateQueries({ queryKey: ["authUser"] })
@@ -32,7 +41,7 @@ const LoginView = () => {
   }
 
   return (
-   <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-900">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-900">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-medium text-gray-200">
           Iniciar sesión en tu cuenta
@@ -71,7 +80,6 @@ const LoginView = () => {
               <input
                 id="email"
                 type="email"
-                required
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -92,7 +100,6 @@ const LoginView = () => {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  required
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
