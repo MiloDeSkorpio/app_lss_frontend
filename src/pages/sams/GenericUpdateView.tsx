@@ -12,6 +12,9 @@ const GenericUpdateView = () => {
 
   const { 
     title, 
+    multerOpt, 
+    maxFiles, 
+    multiple,
     useValidate, 
     useUpload, 
     localFileValidator, 
@@ -23,7 +26,7 @@ const GenericUpdateView = () => {
 
   const [modalData, setModalData] = useState<any>(null) 
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  console.log(modalData)
   const handleValidationSuccess = (data: any) => {
     setModalData(data)
     setIsModalOpen(true)
@@ -33,9 +36,6 @@ const GenericUpdateView = () => {
     return localFileValidator(file)
   }
 
-  const multerOpt = "csvFiles"
-  const maxFiles = 15
-  const multiple = true
 
   return (
     <div className="container mx-auto p-4">

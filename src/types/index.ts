@@ -125,6 +125,9 @@ export interface SuccessModalProps {
 }
 export interface UpdateConfig {
   title: string
+  multerOpt: string;
+  maxFiles: number;
+  multiple: boolean;
   useValidate: () => any 
   useUpload: () => any 
   localFileValidator: (file: File) => { isValid: boolean, errorMessage?: string };

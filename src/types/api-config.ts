@@ -1,5 +1,5 @@
 import type { CardData, CardLNData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion } from "../hooks/SamsHooks";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams } from "../hooks/SamsHooks";
 import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
@@ -62,6 +62,9 @@ export const API_CONFIGS = {
   '/sams/update-cv': {
     update: {
       title: "Actualización de CV",
+      multerOpt: "csvFiles",
+      maxFiles: 15,
+      multiple: true,
       useValidate: useValidateCV,
       useUpload: useUploadCV,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
@@ -71,6 +74,9 @@ export const API_CONFIGS = {
   '/sams/update': {
     update: {
       title: "Actualización de CL",
+      multerOpt: "csvFiles",
+      maxFiles: 15,
+      multiple: true,
       useValidate: useValidate,
       useUpload: useUploadWL,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
@@ -80,7 +86,10 @@ export const API_CONFIGS = {
   '/sams/update-inv': {
     update: {
       title: "Actualización de Inventario",
-      useValidate: useValidateCV,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      useValidate: useValidateSams,
       useUpload: useUploadCV,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
       SuccessComponent: ShowInfo
@@ -171,6 +180,9 @@ export const API_CONFIGS = {
   '/tarjetas/update-ln': {
     update: {
       title: "Actualización de LN",
+      multerOpt: "csvFiles",
+      maxFiles: 15,
+      multiple: true,
       useValidate: useValidateLN,
       useUpload: useUploadLN,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),

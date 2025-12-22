@@ -67,10 +67,10 @@ export function LoaderCSV<TValidationResult>({
         },
         onError: (error) => {
           const err = error as AxiosError<any>
-          const { errorsFiles } = err.response?.data
+          const { errorsFiles } = err.response?.data || {}
           const defaultMessage = err.message || 'Error desconocido'
           if (Array.isArray(errorsFiles)) {
-            showErrorModal(errorsFiles) // Mostrar errores en modal
+            showErrorModal(errorsFiles) 
           } else {
             notify.error(errorsFiles?.error || defaultMessage)
           }

@@ -25,8 +25,8 @@ export const validateFileNameWithDetails = (
         example: 'listablanca_sams_cv_altas_01_202312011200.csv'
       },
       '/sams/update-inv': {
-        regex: /^inventario_sams_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{12}\.csv$/,
-        example: 'inventario_sams_altas_02_202312011200.csv'
+        regex: /^inventario_sams_\d{12}\.csv$/,
+        example: 'inventario_sams_202312011200.csv'
       },
       '/tarjetas/update-ln': {
         regex: /^listanegra_tarjetas_(altas|bajas|cambios)_[0-9A-Fa-f]{2}_\d{14}\.csv$/,

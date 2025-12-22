@@ -16,6 +16,7 @@ interface ShowInfoProps {
 const ShowInfo: React.FC<ShowInfoProps> = ({ isOpen, title = 'Resumen de Version', data, onClose, uploadMutation }) => {
   if (!isOpen) return null
   const result = data[0]
+  console.log(result)
   const dataFinal = [result.altasValidas, result.bajasValidas, result.cambiosValidos]
   const organismos = {
     "MB": ['01', '02', '03', '04', '05', '06', '07'],
