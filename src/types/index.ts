@@ -74,6 +74,10 @@ export interface validationLNResult {
   bajasFinal: any[]
   resultsByOrg: any[]
 }
+export interface validationSMResult {
+  success: boolean
+  data: any[]
+}
 export interface ValidationErrorItem {
   message?: string
 }

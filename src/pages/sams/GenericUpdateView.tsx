@@ -26,7 +26,6 @@ const GenericUpdateView = () => {
 
   const [modalData, setModalData] = useState<any>(null) 
   const [isModalOpen, setIsModalOpen] = useState(false)
-  console.log(modalData)
   const handleValidationSuccess = (data: any) => {
     setModalData(data)
     setIsModalOpen(true)

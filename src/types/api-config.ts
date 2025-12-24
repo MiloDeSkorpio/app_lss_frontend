@@ -4,6 +4,7 @@ import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, 
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
+import ShowInfoSams from "../components/common/ShowInfoSams";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -92,7 +93,7 @@ export const API_CONFIGS = {
       useValidate: useValidateSams,
       useUpload: useUploadCV,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
-      SuccessComponent: ShowInfo
+      SuccessComponent: ShowInfoSams
     }
   },
   '/sams/search-cv': {
