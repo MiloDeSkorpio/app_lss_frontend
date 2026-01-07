@@ -73,10 +73,18 @@ export interface validationLNResult {
   altasFinal: any[]
   bajasFinal: any[]
   resultsByOrg: any[]
-}
+} 
 export interface validationSMResult {
   success: boolean
-  data: any[]
+  newVersion: number
+  currentVersion: any[]
+  currentVersionCount: number
+  newVersionRecordsCount: number
+  ignoredRows: number
+  altasValidas: any[]
+  validByOp: any[]
+  oldByOp: any[]
+  dupByOp: any[]
 }
 export interface ValidationErrorItem {
   message?: string
@@ -288,4 +296,26 @@ export interface ResetPayload {
   email: string
   code: string
   newPassword: string
+}
+
+export interface CategoryConfig {
+  key: string
+  label: string
+  regex: RegExp
+}
+
+export const CATEGORIES: CategoryConfig[] = [
+  { key: 'STC', label: 'STC', regex: /STC/i },
+  { key: 'STE', label: 'STE', regex: /STE|Cablebus/i },
+  { key: 'ORT', label: 'ORT', regex: /ORT/i },
+  { key: 'RTP', label: 'RTP', regex: /RTP/i },
+  { key: 'Metrobus', label: 'Metrobus', regex: /MB Line/i },
+  { key: 'Edomex', label: 'Edomex', regex: /Mexicable|Mexibus/i },
+  { key: 'Spirtech', label: 'Spirtech', regex: /Spirtech/i }
+]
+
+export interface SummaryData {
+  oldData: Record<string, any[]>
+  newData: Record<string, any[]>
+  dupData: Record<string, any[]>
 }
