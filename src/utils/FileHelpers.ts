@@ -1,4 +1,4 @@
-import type { CardListData, ProcessedHexData, ValidationFileResult } from "../types";
+import type { CardListData, ProcessedHexData, SummaryData, ValidationFileResult } from "../types";
 import { notify } from "./notifications"
 /**
  * Valida si el nombre de un archivo coincide con alguno de los patrones definidos.
@@ -460,4 +460,49 @@ export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
       handleDownloadFileEvent(filteredData, finalFileName)
     }
   })
+}
+
+export function generateTxtSummaryFiltered({
+  oldData,
+  newData,
+  dupData
+}: SummaryData): string {
+
+  const organismos = Object.keys({
+    ...oldData,
+    ...newData,
+    ...dupData
+  })
+  
+  const bloques = organismos.map((organismo) => {
+
+    const oldRecords = oldData[organismo] || []
+    const newRecords = newData[organismo] || []
+    const dupRecords = dupData[organismo] || []
+
+    const totalRegistros =
+      oldRecords.length +
+      newRecords.length +
+      dupRecords.length
+
+    const lineas = [
+      `Organización: ${organismo.toUpperCase()}`,
+      '',
+      oldRecords.length > 0 && `Anteriores: ${oldRecords.length}`,
+      newRecords.length > 0 && `Altas: ${newRecords.length}`,
+      dupRecords.length > 0 && `Duplicadas: ${dupRecords.length}`,
+      totalRegistros > 0 && `Total registros: ${totalRegistros}`
+    ].filter(Boolean)
+
+    // Si después de filtrar no quedó ninguna línea útil, omitimos el organismo
+    if (lineas.filter(l => l !== '').length <= 2) {
+      return null
+    }
+
+    return lineas.join('\n')
+  })
+
+  return bloques
+    .filter(Boolean)
+    .join('\n-------------------------------------\n')
 }
