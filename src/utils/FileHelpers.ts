@@ -211,7 +211,7 @@ export const getCurrentDateTimeInputs = () => {
  *   notify.error("Falló la generación de archivos")
  * }
  */
-export const handleDownloadWL = (data: any, name: string,version: string) => {
+export const handleDownloadWL = (data: any, name: string,version: number) => {
   const dateTime = getCurrentDateTime()
 
   // 1. Archivo completo
