@@ -26,7 +26,7 @@ const ShowInfoSams: React.FC<ShowInfoSamsProps> = ({ isOpen, title = 'Resumen de
 
   const handleUpload = () => {
     uploadMutation.mutate(
-      { altasValidas },
+      { altasValidas, newVersion},
       {
         onSuccess: () => {
           notify.success('Nueva Version Creada con Exito!')
