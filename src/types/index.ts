@@ -102,14 +102,13 @@ export interface ValidationFileResult {
 
 // A generic type for the records returned by the list/version hooks
 export type VersionDataRecord = {
-  version?: number | string
-  operator?: string
-  fecha_produccion?: string
-  provider_code?: string
-  [key: string]: any
+  success: boolean
+  version: number 
+  totalRecords: number
+  recordsByOrg: RecordsByOrg
 }
 
-export type CardData = VersionDataRecord[]
+export type CardData = VersionDataRecord
 
 export type VersionDataLNRecord = {
   total?: number 
@@ -126,6 +125,10 @@ export type ListCVPayload = {
 export type ListLNPayload = {
   altasValidas: any[],
   bajasValidas: any[]
+}
+export type ListSMPayload = {
+  altasValidas: any[]
+  version: number
 }
 export type uploadPayload = ListCVPayload | ListLNPayload
 // New interfaces for nested configurations
@@ -168,29 +171,24 @@ export interface VersionsConfig {
 export interface CardConfig {
   titleCard: string
   useData: () => {
-    data: CardData | undefined // data can be undefined while loading
+    data: CardData 
     isLoading: boolean
     error: Error | null
   }
-  getSummary: (data: CardData | undefined) => {
-    total: number
-    version: string
-  }
-  getOperatorCount: (data: CardData | undefined, op: string) => number
   nav: {
     update: string
     search: string
     history: string
   }
   downloadName: string
-  update?: UpdateConfig // Use the new interface
-  search?: SearchConfig // Use the new interface
-  versions?: VersionsConfig // Use the new interface
+  update?: UpdateConfig 
+  search?: SearchConfig 
+  versions?: VersionsConfig 
 }
 export interface CardLNConfig {
   titleCard: string
   useData: () => {
-    data: CardLNData | undefined // data can be undefined while loading
+    data: CardLNData | undefined
     isLoading: boolean
     error: Error | null
   }
@@ -319,3 +317,8 @@ export interface SummaryData {
   newData: Record<string, any[]>
   dupData: Record<string, any[]>
 }
+
+export type RecordsByOrg = {
+  label: string
+  value: number
+}[]

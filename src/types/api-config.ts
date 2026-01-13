@@ -1,5 +1,5 @@
 import type { CardData, CardLNData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams } from "../hooks/SamsHooks";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv } from "../hooks/SamsHooks";
 import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
@@ -10,47 +10,29 @@ export const API_CONFIGS = {
   '/sams': {
     title: 'Administración de SAMS',
     cards: {
-      samsCV: {
-        titleCard: 'Lista Blanca CV',
-        useData: getLatestVersionWLCV,
-        getSummary: (data: CardData | undefined) => ({
-          total: data?.length || 0,
-          version: data?.[0]?.version || "N/A",
-        }),
-        getOperatorCount: (data: CardData | undefined, op: string) =>
-          data?.filter((s) => s.operator === op).length || 0,
-        nav: {
-          update: "/sams/update-cv",
-          search: "/sams/search-cv",
-          history: "/sams/versions-cv"
-        },
-        downloadName: 'listablanca_cv',
-      },
-      samsWL: {
-        titleCard: 'Lista Blanca CL',
-        useData: getLatestVersionWL,
-        getSummary: (data: CardData | undefined) => ({
-          total: data?.length || 0,
-          version: data?.[0]?.version || "N/A",
-        }),
-        getOperatorCount: (data: CardData | undefined, op: string) =>
-          data?.filter((s) => s.operator === op).length || 0,
-        nav: {
-          update: "/sams/update",
-          search: "/sams/search",
-          history: "/sams/versions"
-        },
-        downloadName: 'listablanca',
-      },
+      // samsCV: {
+      //   titleCard: 'Lista Blanca CV',
+      //   useData: getLatestVersionWLCV,
+      //   nav: {
+      //     update: "/sams/update-cv",
+      //     search: "/sams/search-cv",
+      //     history: "/sams/versions-cv"
+      //   },
+      //   downloadName: 'listablanca_cv',
+      // },
+      // samsWL: {
+      //   titleCard: 'Lista Blanca CL',
+      //   useData: getLatestVersionWL,
+      //   nav: {
+      //     update: "/sams/update",
+      //     search: "/sams/search",
+      //     history: "/sams/versions"
+      //   },
+      //   downloadName: 'listablanca',
+      // },
       samsInv: {
         titleCard: 'Inventario',
-        useData: getLatestVersionInv,
-        getSummary: (data: CardData | undefined) => ({
-          total: data?.length || 0,
-          version: data?.[0]?.fecha_produccion || "N/A",
-        }),
-        getOperatorCount: (data: CardData | undefined, op: string) =>
-          data?.filter((s) => s.provider_code === op).length || 0,
+        useData: getSumaryVersionInv,
         nav: {
           update: "/sams/update-inv",
           search: "/sams/search-inv",
@@ -91,7 +73,7 @@ export const API_CONFIGS = {
       maxFiles: 1,
       multiple: false,
       useValidate: useValidateSams,
-      useUpload: useUploadCV,
+      useUpload: useUploadSM,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
       SuccessComponent: ShowInfoSams
     }
