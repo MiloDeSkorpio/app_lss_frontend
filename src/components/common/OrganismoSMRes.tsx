@@ -18,8 +18,7 @@ const OrganismoRes = ({ oldData, newData, dupData }: SummaryData) => {
 
         const totalRegistros =
           oldRecords.length +
-          newRecords.length +
-          dupRecords.length
+          newRecords.length 
 
         if (totalRegistros === 0) return null
 
@@ -29,9 +28,7 @@ const OrganismoRes = ({ oldData, newData, dupData }: SummaryData) => {
             className="border m-0.5"
           >
             <h2 className="font-bold">{organismo}</h2>
-
             <div className="border-t">
-
               <p>Anteriores: {oldRecords.length}</p>
               <p>Altas: {newRecords.length}</p>
               <p>Duplicadas: {dupRecords.length}</p>
