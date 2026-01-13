@@ -74,12 +74,33 @@ export const getLatestVersionInv = () => {
     },
   })
 }
+export const getSumaryVersionInv = () => {
+  return useQuery({
+    queryKey: ['summaryinv'],
+    queryFn: async () => {
+      const response = await apiClient.get('/sams/get-summary')
+      return response.data
+    },
+  })
+}
 
 // Ejemplo para enviar datos (POST)
 export const useUploadCV = () => {
   return useMutation({
     mutationFn: async (payload: ListCVPayload) => {
       const response = await apiClient.post('/whitelist/new-version-cv', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      return response.data
+    }
+  })
+}
+export const useUploadSM = () => {
+  return useMutation({
+    mutationFn: async (payload: ListCVPayload) => {
+      const response = await apiClient.post('/sams/new-version', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
