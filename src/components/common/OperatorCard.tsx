@@ -56,25 +56,26 @@ const OperatorCard: React.FC<OperatorCardProps> = ({
               Actualizar
             </button>
           )}
-          {onDownload && (
+
+          {onSearch && (
             <button
               type="button"
-              onClick={onDownload}
-              className="mt-3 px-4 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-              aria-label="Descargar datos"
+              onClick={onSearch}
+              className="px-4 py-1.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition"
+              aria-label="Buscar"
             >
-              Descargar
+              Buscar
             </button>
           )}
-          <div className="justify-between space-x-2.5">
-            {onSearch && (
+          <div className="justify-between space-x-2">
+            {onDownload && (
               <button
                 type="button"
-                onClick={onSearch}
-                className="px-4 py-1.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition"
-                aria-label="Buscar"
+                onClick={onDownload}
+                className="mt-3 px-4 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                aria-label="Descargar datos"
               >
-                Buscar
+                Descargar
               </button>
             )}
             {onHistory && (
