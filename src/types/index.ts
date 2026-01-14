@@ -106,6 +106,7 @@ export type VersionDataRecord = {
   version: number 
   totalRecords: number
   recordsByOrg: RecordsByOrg
+  records: any[]
 }
 
 export type CardData = VersionDataRecord
