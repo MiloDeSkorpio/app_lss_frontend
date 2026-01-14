@@ -211,7 +211,7 @@ export const getCurrentDateTimeInputs = () => {
  *   notify.error("Falló la generación de archivos")
  * }
  */
-export const handleDownloadWL = (data: any, name: string,version: number) => {
+export const handleDownloadWL = (data: any, name: string, version: number) => {
   const dateTime = getCurrentDateTime()
 
   // 1. Archivo completo
@@ -247,6 +247,27 @@ export const handleDownloadWL = (data: any, name: string,version: number) => {
   downloadFile(hexCSV, `${dateTime}_${name}_V${version}.csv`, "text/csv")
   notify.success('Descarga Exitosa!')
 }
+
+//download full data or partial data based on context
+export const handleDownload = (data: any, name: string, version: number) => {
+  const dateTime = getCurrentDateTime()
+  if (name.includes("inventario")) {
+    const serialData = data.map((item: any) => ({
+      serial_number_decimal: item.serial_number_decimal,
+      serial_number_hexadecimal: item.serial_number_hexadecimal,
+      configuration: item.configuration,
+      operator: item.line_operator_or_recipient,
+    }))
+    const serialCSV = convertToCSV(serialData)
+    downloadFile(
+      serialCSV,
+      `${dateTime}_${name}_V${version}.csv`,
+      "text/csv"
+    )
+  }
+  notify.success('Descarga Exitosa!')
+}
+
 function processHexSequences(data: CardListData[], columnName: string = 'card_serial_number'): ProcessedHexData {
   const ranges: CardListData[] = [];
   const individuals: CardListData[] = [];
@@ -282,7 +303,7 @@ function processHexSequences(data: CardListData[], columnName: string = 'card_se
 
     // Evitar duplicados
     if (currentItem.intValue === lastItem.intValue) {
-        continue;
+      continue;
     }
 
     if (currentItem.intValue === lastItem.intValue + 1n) {
@@ -295,14 +316,14 @@ function processHexSequences(data: CardListData[], columnName: string = 'card_se
       } else {
         const startHex = startItem.hex.toString().toUpperCase().padStart(16, '0');
         const endHex = lastItem.hex.toString().toUpperCase().padStart(16, '0');
-        
+
         const rangeObject: CardListData = {
           ...startItem.original,
           card_serial_number: `${startHex}-${endHex}`, // Sobrescribir card_serial_number
         };
         ranges.push(rangeObject);
       }
-      
+
       // Iniciar una nueva secuencia.
       startItem = currentItem;
       lastItem = currentItem;
@@ -339,7 +360,7 @@ export const handleDownloadBL = (data: any, name: string, version: string) => {
   }))
   const fullCSV = convertToCSV(allData)
   downloadFile(fullCSV, `${dateTime}_${name}_V${version}_general.csv`, "text/csv")
-  const result = processHexSequences(data,'card_serial_number')
+  const result = processHexSequences(data, 'card_serial_number')
 
   // console.log(result.ranges)
   // 2. Archivo solo con serial_dec y serial_hex
@@ -439,7 +460,7 @@ export const handleDownloadIfData = (dataArray: any[], fileName: string) => {
   if (!hasOperator) {
     const altFileName = `${fileName}_${dateTime}.csv`
     handleDownloadFileEvent(dataArray, altFileName)
-    return 
+    return
   }
 
   const providerCodes = {
@@ -473,7 +494,7 @@ export function generateTxtSummaryFiltered({
     ...newData,
     ...dupData
   })
-  
+
   const bloques = organismos.map((organismo) => {
 
     const oldRecords = oldData[organismo] || []
