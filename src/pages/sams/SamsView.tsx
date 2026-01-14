@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import OperatorCard from "../../components/common/OperatorCard"
-import { handleDownloadWL } from "../../utils/FileHelpers"
+import { handleDownload } from "../../utils/FileHelpers"
 import { useRouteAwareApi } from "../../hooks/useRouteAwareApi"
 import type { CardConfig } from "../../types"
 
@@ -23,7 +23,7 @@ const OperatorCardFromConfig = ({ cardConfig }: OperatorCardFromConfigProps) => 
       operators={data.recordsByOrg}
       onDownload={(e) => {
         e.preventDefault()
-        handleDownloadWL(data, cardConfig.downloadName, data.version)
+        handleDownload(data.records, cardConfig.downloadName, data.version)
       }}
       onUpdate={() => navigate(cardConfig.nav.update)}
       onSearch={() => navigate(cardConfig.nav.search)}
