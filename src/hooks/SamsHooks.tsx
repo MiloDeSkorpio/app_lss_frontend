@@ -45,9 +45,9 @@ return useQuery<SearchResult, Error>({
 }
 export const getSamByHexId = (hexId: string) => {
 return useQuery<SearchResult, Error>({
-    queryKey: ['samcv', hexId],
+    queryKey: ['sam', hexId],
     queryFn: async () => {
-      const response = await apiClient.get(`/whitelist/first/${hexId}`)
+      const response = await apiClient.get(`/sams/find-by-serial/${hexId}`)
       return response.data
     },
     enabled: !!hexId,
@@ -175,6 +175,18 @@ export const useUploadListWl = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
       const response = await apiClient.post('/whitelist/sams-wl', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }) 
+      return response.data
+    }
+  })
+}
+export const useUploadSAMList = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/sams/find-by-file', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
