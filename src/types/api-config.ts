@@ -1,5 +1,5 @@
 import type { CardData, CardLNData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv } from "../hooks/SamsHooks";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList } from "../hooks/SamsHooks";
 import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
@@ -106,7 +106,7 @@ export const API_CONFIGS = {
     search: {
       title: "Buscar SAMS General",
       getById: getSamByHexId,
-      useUploadList: useUploadListWl,
+      useUploadList: useUploadSAMList,
       multerOpt: "csvFile",
       maxFiles: 1,
       multiple: false,
