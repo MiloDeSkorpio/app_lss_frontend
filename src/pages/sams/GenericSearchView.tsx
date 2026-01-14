@@ -42,11 +42,11 @@ const GenericSearchView = () => {
       return
   }
   const allResults = useMemo(() => {
-    if (multipleData) return multipleData.data.recordsFound
-    if (singleData) return [singleData]
+    if (multipleData) return multipleData
+    if (singleData) return singleData
     return []
   }, [singleData, multipleData])
-  console.log(allResults)
+
   const handleClean = () => {
     if (allResults) {
       queryClient.removeQueries({
@@ -86,7 +86,6 @@ const GenericSearchView = () => {
           isLoading={isLoading}
           error={error}
           onClean={handleClean}
-          summary={multipleData ?? null}
         />
       ) : (
         <>
