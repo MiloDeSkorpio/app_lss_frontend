@@ -1,4 +1,4 @@
-import type { SearchResult, SearchSummary } from "../../types"
+import type { SearchResult } from "../../types"
 
 interface ResComponentsProps {
   data?: SearchResult | SearchResult[]
@@ -6,7 +6,6 @@ interface ResComponentsProps {
   error: Error | null
   onClean: () => void
   showAllFields?: boolean
-
 }
 const Search = ({
   data,
@@ -14,7 +13,6 @@ const Search = ({
   error,
   showAllFields = true,
   onClean,
-  
 }: ResComponentsProps) => {
   const results = Array.isArray(data)
     ? data.map(item => item)
