@@ -1,10 +1,11 @@
-import type { CardData, CardLNData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList } from "../hooks/SamsHooks";
-import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
+import type { CardData, CardLNData, LSSData } from ".";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList, getSumaryVersionLssTIMT } from "../hooks/SamsHooks";
+import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useUploadLSSTIMT, useValidateLN, useValidateLSSTIMT } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
 import ShowInfoSams from "../components/common/ShowInfoSams";
+import ShowInfoLSS from "../components/common/ShowInfoLSS";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -141,7 +142,7 @@ export const API_CONFIGS = {
       fileName: "listablanca_sams",
     }
   },
-  '/tarjetas':{
+  '/tarjetas': {
     title: 'Administración de Tarjetas',
     cards: {
       blacklist: {
@@ -192,5 +193,36 @@ export const API_CONFIGS = {
       useRestoreVersion: useRestoreVersionBL,
       fileName: "listanegra_tarjetas",
     }
-  }
+  },
+  '/listas-seguridad': {
+    title: 'Administración de Listas de Seguridad',
+    cards: {
+      lssTIMT: {
+        titleCard: 'Tren Interurbano México-Toluca',
+        useData: getSumaryVersionLssTIMT,
+        getSummary: (data: LSSData | undefined) => ({
+          total: data?.totalRecords,
+          version: data?.version
+        }),
+        nav: {
+          update: "/listas-seguridad/update",
+          search: "/listas-seguridad/search",
+          history: "/listas-seguridad/versions"
+        },
+        downloadName: 'listaseguridadtimt_sams_',
+      }
+    }
+  },
+  '/listas-seguridad/update': {
+    update: {
+      title: "Actualización LSS-TIMT",
+      multerOpt: "csvFiles",
+      maxFiles: 3,
+      multiple: true,
+      useValidate: useValidateLSSTIMT,
+      useUpload: useUploadLSSTIMT,
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
+      SuccessComponent: ShowInfoLSS
+    }
+  },
 }

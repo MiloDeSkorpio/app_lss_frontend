@@ -1,0 +1,39 @@
+import { useMutation, useQuery } from '@tanstack/react-query'
+import apiClient from '../services/apiClient.tsx'
+import type { ListLssPayload } from '../types/index.ts'
+
+
+export const getSumaryVersionLssTIMT = () => {
+  return useQuery({
+    queryKey: ['summarytimt'],
+    queryFn: async () => {
+      const response = await apiClient.get('/lss/get-summary')
+      return response.data
+    },
+  })
+}
+
+export const useValidateLSSTIMT = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/lss/validate-timt', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    }
+  })
+}
+export const useUploadLSSTIMT = () => {
+  return useMutation({
+    mutationFn: async (payload: ListLssPayload) => {
+      const response = await apiClient.post('/lss/new-version-timt', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      return response.data
+    }
+  })
+}

@@ -86,6 +86,19 @@ export interface validationSMResult {
   oldByOp: any[]
   dupByOp: any[]
 }
+export interface validationLSSResult {
+  lastVersion: number
+  lastVersionRecords: any[]
+  newVersion: number
+  newRecords: any[]
+  newRecordsCount: number
+  altasValidas: any[]
+  altasDuplicadas: any[]
+  bajasInactivas: any[]
+  bajasValidas: any[]
+  cambiosValidos: any[]
+  sinCambios: any[]
+}
 export interface ValidationErrorItem {
   message?: string
 }
@@ -108,12 +121,19 @@ export type VersionDataRecord = {
   recordsByOrg: RecordsByOrg
   records: any[]
 }
+export type VersionLSSRecord = {
+  success: boolean
+  version: number 
+  totalRecords: number
+  records: any[]
+}
 
 export type CardData = VersionDataRecord
+export type LSSData = VersionLSSRecord
 
 export type VersionDataLNRecord = {
   total?: number 
-  version_ln?: string
+  version_ln?: number
 }
 
 export type CardLNData = VersionDataLNRecord[]
@@ -126,6 +146,11 @@ export type ListCVPayload = {
 export type ListLNPayload = {
   altasValidas: any[],
   bajasValidas: any[]
+}
+export type ListLssPayload = {
+  altasValidas: any[],
+  bajasValidas: any[],
+  cambiosValidos: any[]
 }
 export type ListSMPayload = {
   altasValidas: any[]
@@ -169,6 +194,23 @@ export interface VersionsConfig {
   fileName: string
 }
 
+export interface LSSConfig {
+  titleCard: string
+  useData: () => {
+    data: LSSData 
+    isLoading: boolean
+    error: Error | null
+  }
+  nav: {
+    update: string
+    search: string
+    history: string
+  }
+  downloadName: string
+  update?: UpdateConfig 
+  search?: SearchConfig 
+  versions?: VersionsConfig 
+}
 export interface CardConfig {
   titleCard: string
   useData: () => {
@@ -228,7 +270,7 @@ export type UseRouteAwareApiReturn = MainRouteConfig | CardConfig | null
 
 export interface ResumeCardProps {
   title: string
-  lastVersion: string
+  lastVersion: number
   totalRecords: number
   onDownload?: (e: React.MouseEvent<HTMLButtonElement>) => void
   onUpdate?: () => void
