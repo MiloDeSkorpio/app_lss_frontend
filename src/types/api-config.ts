@@ -1,11 +1,12 @@
 import type { CardData, CardLNData, LSSData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList, getSumaryVersionLssTIMT } from "../hooks/SamsHooks";
-import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useUploadLSSTIMT, useValidateLN, useValidateLSSTIMT } from "../hooks/CardHooks"
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList } from "../hooks/SamsHooks";
+import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
 import ShowInfoSams from "../components/common/ShowInfoSams";
 import ShowInfoLSS from "../components/common/ShowInfoLSS";
+import { getSumaryVersionLssTIMT, useUploadLSSTIMT, useValidateLSSTIMT } from "../hooks/LssHooks";
 
 export const API_CONFIGS = {
   '/sams': {
