@@ -25,7 +25,7 @@ const ShowInfoLSS: React.FC<ShowInfoLSSProps> = ({ isOpen, title = 'Resumen de V
     bajasValidas,
     cambiosValidos,
     sinCambios } = data
-  console.log(newVersion)
+
   const navigate = useNavigate()
   const totalAltas = newRecordsCount
   const totalBajas = bajasValidas.length
@@ -33,13 +33,14 @@ const ShowInfoLSS: React.FC<ShowInfoLSSProps> = ({ isOpen, title = 'Resumen de V
   const totalAltasInvalid = altasDuplicadas.length
   const totalBajasInvalid = bajasInactivas.length
   const totalCambiosInvalid = sinCambios.length
-  console.log(totalCambiosInvalid)
+
   const handleUpload = () => {
     uploadMutation.mutate(
       {
         altasValidas,
         bajasValidas,
-        cambiosValidos
+        cambiosValidos,
+        newVersion
       },
       {
         onSuccess: () => {
@@ -68,7 +69,7 @@ const ShowInfoLSS: React.FC<ShowInfoLSSProps> = ({ isOpen, title = 'Resumen de V
           URL.revokeObjectURL(url)
 
           setTimeout(() => {
-            navigate('/tarjetas')
+            navigate('/listas-seguridad')
           }, 1500)
         },
         onError: (error) => {

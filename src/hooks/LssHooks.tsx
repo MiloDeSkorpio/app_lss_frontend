@@ -3,11 +3,12 @@ import apiClient from '../services/apiClient.tsx'
 import type { ListLssPayload } from '../types/index.ts'
 
 
+// LSS TIMT Hooks
 export const getSumaryVersionLssTIMT = () => {
   return useQuery({
     queryKey: ['summarytimt'],
     queryFn: async () => {
-      const response = await apiClient.get('/lss/get-summary')
+      const response = await apiClient.get('/lss/get-summary-timt')
       return response.data
     },
   })
