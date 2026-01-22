@@ -223,15 +223,6 @@ export function LoaderCSV<TValidationResult>({
           >
             {validateMutation.isPending ? "Validando..." : "Validar información"}
           </button>
-
-          {validateMutation.isError && (
-            <div className="p-3 bg-red-50 text-red-600 rounded-md">
-              Error:{" "}
-              {validateMutation.error instanceof Error
-                ? validateMutation.error.message
-                : "Error desconocido"}
-            </div>
-          )}
           {validateMutation.isSuccess && (
             <div className="p-3 bg-green-50 text-green-600 rounded-md">
               Archivo subido correctamente
@@ -239,7 +230,6 @@ export function LoaderCSV<TValidationResult>({
           )}
         </div>
       )}
-
       <ErrorModal
         isOpen={isModalOpen}
         errorsF={modalErrors}
