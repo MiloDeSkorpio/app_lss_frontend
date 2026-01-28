@@ -1,5 +1,5 @@
 import type { CardData, CardLNData } from ".";
-import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList } from "../hooks/SamsHooks";
+import { getLatestVersionInv, getLatestVersionWL, getLatestVersionWLCV, useUploadCV, useValidateCV, useUploadWL, useValidate, getSamCVByHexId, useUploadListCV, getResumeCV, useCompareVersionsCV, useRestoreVersionCV, getSamByHexId, useUploadListWl, getResume, useCompareVersions, useRestoreVersion, useValidateSams, useUploadSM, getSumaryVersionInv, useUploadSAMList, getSumaryVersionWL, getSumaryVersionWLCV } from "../hooks/SamsHooks";
 import { getCardByHexId, getLatestVersionBL, getResumeBL, useCompareVersionsBL, useRestoreVersionBL, useUploadListBL, useUploadLN, useValidateLN } from "../hooks/CardHooks"
 import { validateFileNameWithDetails } from "../utils/FileHelpers";
 import ShowInfoBL from "../components/common/ShowInfoBL";
@@ -10,26 +10,26 @@ export const API_CONFIGS = {
   '/sams': {
     title: 'Administración de SAMS',
     cards: {
-      // samsCV: {
-      //   titleCard: 'Lista Blanca CV',
-      //   useData: getLatestVersionWLCV,
-      //   nav: {
-      //     update: "/sams/update-cv",
-      //     search: "/sams/search-cv",
-      //     history: "/sams/versions-cv"
-      //   },
-      //   downloadName: 'listablanca_cv',
-      // },
-      // samsWL: {
-      //   titleCard: 'Lista Blanca CL',
-      //   useData: getLatestVersionWL,
-      //   nav: {
-      //     update: "/sams/update",
-      //     search: "/sams/search",
-      //     history: "/sams/versions"
-      //   },
-      //   downloadName: 'listablanca',
-      // },
+      samsCV: {
+        titleCard: 'Lista Blanca CV',
+        useData: getSumaryVersionWLCV,
+        nav: {
+          update: "/sams/update-cv",
+          search: "/sams/search-cv",
+          history: "/sams/versions-cv"
+        },
+        downloadName: 'listablanca_cv',
+      },
+      samsWL: {
+        titleCard: 'Lista Blanca CL',
+        useData: getSumaryVersionWL,
+        nav: {
+          update: "/sams/update",
+          search: "/sams/search",
+          history: "/sams/versions"
+        },
+        downloadName: 'listablanca',
+      },
       samsInv: {
         titleCard: 'Inventario',
         useData: getSumaryVersionInv,

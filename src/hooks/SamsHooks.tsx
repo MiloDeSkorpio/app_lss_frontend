@@ -83,6 +83,24 @@ export const getSumaryVersionInv = () => {
     },
   })
 }
+export const getSumaryVersionWL= () => {
+  return useQuery({
+    queryKey: ['summarywl'],
+    queryFn: async () => {
+      const response = await apiClient.get('/whitelist/get-summary')
+      return response.data
+    },
+  })
+}
+export const getSumaryVersionWLCV = () => {
+  return useQuery({
+    queryKey: ['summarywlcv'],
+    queryFn: async () => {
+      const response = await apiClient.get('/whitelist/get-summary-cv')
+      return response.data
+    },
+  })
+}
 
 // Ejemplo para enviar datos (POST)
 export const useUploadCV = () => {

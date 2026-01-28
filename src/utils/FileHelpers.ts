@@ -214,23 +214,10 @@ export const getCurrentDateTimeInputs = () => {
 export const handleDownloadWL = (data: any, name: string, version: number) => {
   const dateTime = getCurrentDateTime()
 
-  // 1. Archivo completo
-  // const allData = data.map((item: any) => ({
-  //   serial_dec: item.serial_dec,
-  //   serial_hex: item.serial_hex,
-  //   config: item.config,
-  //   operator: item.operator,
-  //   location_id: item.location_id,
-  //   estacion: item.estacion,
-  // }))
-  // console.log(allData)
-  // const fullCSV = convertToCSV(allData)
-  // downloadFile(fullCSV, `${dateTime}_${name}_V${version}_all.csv`, "text/csv")
-
   // 2. Archivo solo con serial_dec y serial_hex
   const serialData = data.map((item: any) => ({
-    serial_dec: item.serial_dec,
-    serial_hex: item.serial_hex,
+    serial_dec: item.SERIAL_DEC,
+    serial_hex: item.SERIAL_HEX,
   }))
   const serialCSV = convertToCSV(serialData)
   downloadFile(
@@ -241,7 +228,7 @@ export const handleDownloadWL = (data: any, name: string, version: number) => {
 
   // 3. Archivo solo con serial_hex
   const hexOnlyData = data.map((item: any) => ({
-    serial_hex: item.serial_hex,
+    serial_hex: item.SERIAL_HEX,
   }))
   const hexCSV = convertToCSV(hexOnlyData)
   downloadFile(hexCSV, `${dateTime}_${name}_V${version}.csv`, "text/csv")

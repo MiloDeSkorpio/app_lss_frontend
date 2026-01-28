@@ -10,7 +10,6 @@ interface OperatorCardProps {
   onSearch?: () => void
   onHistory?: () => void
 }
-
 const OperatorCard: React.FC<OperatorCardProps> = ({
   title,
   lastVersion,
@@ -21,6 +20,9 @@ const OperatorCard: React.FC<OperatorCardProps> = ({
   onSearch,
   onHistory,
 }) => {
+  if(!operators){
+    
+  }
   return (
     <div className="border border-gray-200 p-6 rounded-xl shadow-sm bg-gray-300 hover:shadow-md transition-shadow duration-300 space-y-4">
       <h2 className="text-xl font-bold text-gray-800">{title}</h2>
@@ -28,10 +30,10 @@ const OperatorCard: React.FC<OperatorCardProps> = ({
         {/* Estadísticas */}
         <div className="flex justify-between text-sm text-gray-700">
           <p>
-            Última Versión: <span className="font-semibold">{lastVersion}</span>
+            Última Versión: <span className="font-semibold">{lastVersion ?? 'N/A'}</span>
           </p>
           <p>
-            Registros: <span className="font-semibold">{totalRecords}</span>
+            Registros: <span className="font-semibold">{totalRecords?? 'N/A'}</span>
           </p>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-700">
