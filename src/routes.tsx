@@ -13,7 +13,7 @@ import DashboardHome from './pages/DashboardHome'
 import SamsView from './pages/sams/SamsView'
 import CardsView from './pages/cards/CardsView'
 import TransactionView from './pages/TransactionView'
-import SecurityView from './pages/SecurityView'
+import SecurityView from './pages/lss/SecurityView'
 import GenericSearchView from './pages/sams/GenericSearchView'
 import GenericVersionsView from './pages/sams/GenericVersionsView'
 import GenericUpdateView from './pages/sams/GenericUpdateView'
@@ -53,8 +53,12 @@ const router = createBrowserRouter([
           { path: "tarjetas/update-ln", element: <GenericUpdateView /> },
           { path: "tarjetas/search-card", element: <GenericSearchView /> },
           { path: "tarjetas/versions", element: <GenericVersionsView /> },
-          // Otras
+          // LSS
           { path: "listas-seguridad", element: <SecurityView /> },
+          { path: "listas-seguridad/update-timt", element: <GenericUpdateView /> },
+          { path: "listas-seguridad/search-timt", element: <GenericSearchView /> },
+          { path: "listas-seguridad/versions-timt", element: <GenericVersionsView /> },
+          //others
           { path: "transacciones", element: <TransactionView /> },
         ],
       },
