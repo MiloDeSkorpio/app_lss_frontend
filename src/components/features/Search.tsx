@@ -19,7 +19,7 @@ const Search = ({
     : data?.data
       ? [data.data]
       : []
-
+  console.log(results)
   const columns = results.length > 0
     ? Object.keys(results[0]).map(key => ({
       key,

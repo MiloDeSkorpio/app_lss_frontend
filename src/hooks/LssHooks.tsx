@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import apiClient from '../services/apiClient.tsx'
-import type { ListLssPayload } from '../types/index.ts'
+import type { ListLssPayload, SearchResult } from '../types/index.ts'
 
 
 // LSS TIMT Hooks
@@ -36,5 +36,16 @@ export const useUploadLSSTIMT = () => {
       })
       return response.data
     }
+  })
+}
+export const getSAMTimtByHexId = (hexId: string) => {
+  return useQuery<SearchResult, Error>({
+    queryKey: ['sam-timt', hexId],
+    queryFn: async () => {
+      const response = await apiClient.get(`/lss/find-timt/${hexId}`)
+      return response.data
+    },
+    enabled: !!hexId, 
+    retry: false,
   })
 }

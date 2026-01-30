@@ -55,9 +55,9 @@ const router = createBrowserRouter([
           { path: "tarjetas/versions", element: <GenericVersionsView /> },
           // LSS
           { path: "listas-seguridad", element: <SecurityView /> },
-          { path: "listas-seguridad/update", element: <GenericUpdateView /> },
-          { path: "listas-seguridad/search", element: <GenericSearchView /> },
-          { path: "listas-seguridad/versions", element: <GenericVersionsView /> },
+          { path: "listas-seguridad/update-timt", element: <GenericUpdateView /> },
+          { path: "listas-seguridad/search-timt", element: <GenericSearchView /> },
+          { path: "listas-seguridad/versions-timt", element: <GenericVersionsView /> },
           //others
           { path: "transacciones", element: <TransactionView /> },
         ],

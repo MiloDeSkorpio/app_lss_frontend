@@ -214,20 +214,6 @@ export const getCurrentDateTimeInputs = () => {
 export const handleDownloadWL = (data: any, name: string, version: number) => {
   const dateTime = getCurrentDateTime()
 
-  // 1. Archivo completo
-  // const allData = data.map((item: any) => ({
-  //   serial_dec: item.serial_dec,
-  //   serial_hex: item.serial_hex,
-  //   config: item.config,
-  //   operator: item.operator,
-  //   location_id: item.location_id,
-  //   estacion: item.estacion,
-  // }))
-  // console.log(allData)
-  // const fullCSV = convertToCSV(allData)
-  // downloadFile(fullCSV, `${dateTime}_${name}_V${version}_all.csv`, "text/csv")
-
-  // 2. Archivo solo con serial_dec y serial_hex
   const serialData = data.map((item: any) => ({
     serial_dec: item.serial_dec,
     serial_hex: item.serial_hex,
@@ -264,8 +250,23 @@ export const handleDownload = (data: any, name: string, version: number) => {
       `${dateTime}_${name}_V${version}.csv`,
       "text/csv"
     )
+    notify.success('Descarga Exitosa!')
   }
-  notify.success('Descarga Exitosa!')
+  if(name.includes("listaseguridadtimt")){
+    const listatimt = data.map((item: any) => ({
+      serial_hex: item.serial_hex,
+      location_id: item.location_id,
+      dias: item.dias,
+      horario: item.horario,
+    }))
+    const listatimtCSV = convertToCSV(listatimt)
+    downloadFile(
+      listatimtCSV,
+      `${name}V${version}.csv`,
+      "text/csv"
+    )
+    notify.success('Descarga Exitosa TIMT!')
+  }
 }
 
 function processHexSequences(data: CardListData[], columnName: string = 'card_serial_number'): ProcessedHexData {

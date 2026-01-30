@@ -6,7 +6,7 @@ import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
 import ShowInfoSams from "../components/common/ShowInfoSams";
 import ShowInfoLSS from "../components/common/ShowInfoLSS";
-import { getSumaryVersionLssTIMT, useUploadLSSTIMT, useValidateLSSTIMT } from "../hooks/LssHooks";
+import { getSAMTimtByHexId, getSumaryVersionLssTIMT, useUploadLSSTIMT, useValidateLSSTIMT } from "../hooks/LssHooks";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -206,15 +206,15 @@ export const API_CONFIGS = {
           version: data?.version
         }),
         nav: {
-          update: "/listas-seguridad/update",
-          search: "/listas-seguridad/search",
-          history: "/listas-seguridad/versions"
+          update: "/listas-seguridad/update-timt",
+          search: "/listas-seguridad/search-timt",
+          history: "/listas-seguridad/versions-timt"
         },
         downloadName: 'listaseguridadtimt_sams_',
       }
     }
   },
-  '/listas-seguridad/update': {
+  '/listas-seguridad/update-timt': {
     update: {
       title: "Actualización LSS-TIMT",
       multerOpt: "csvFiles",
@@ -224,6 +224,18 @@ export const API_CONFIGS = {
       useUpload: useUploadLSSTIMT,
       localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname),
       SuccessComponent: ShowInfoLSS
+    }
+  },
+    '/listas-seguridad/search-timt': {
+    search: {
+      title: "Buscar Tarjeta",
+      getById: getSAMTimtByHexId,
+      useUploadList: useUploadListBL,
+      multerOpt: "csvFile",
+      maxFiles: 1,
+      multiple: false,
+      queryKeyForClean: "sam-timt",
+      localFileValidator: (file: File) => validateFileNameWithDetails(file.name, location.pathname)
     }
   },
 }
