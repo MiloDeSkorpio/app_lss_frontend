@@ -49,3 +49,15 @@ export const getSAMTimtByHexId = (hexId: string) => {
     retry: false,
   })
 }
+export const useUploadListLSSTIMT = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await apiClient.post('/lss/find-by-file-timt', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }) 
+      return response.data
+    }
+  })
+}

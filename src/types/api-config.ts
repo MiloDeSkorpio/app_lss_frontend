@@ -7,7 +7,7 @@ import ShowInfoBL from "../components/common/ShowInfoBL";
 import ShowInfo from "../components/common/ShowInfo";
 import ShowInfoSams from "../components/common/ShowInfoSams";
 import ShowInfoLSS from "../components/common/ShowInfoLSS";
-import { getSAMTimtByHexId, getSumaryVersionLssTIMT, useUploadLSSTIMT, useValidateLSSTIMT } from "../hooks/LssHooks";
+import { getSAMTimtByHexId, getSumaryVersionLssTIMT, useUploadListLSSTIMT, useUploadLSSTIMT, useValidateLSSTIMT } from "../hooks/LssHooks";
 
 export const API_CONFIGS = {
   '/sams': {
@@ -229,9 +229,9 @@ export const API_CONFIGS = {
   },
     '/listas-seguridad/search-timt': {
     search: {
-      title: "Buscar Tarjeta",
+      title: "Buscar SAM-TIMT",
       getById: getSAMTimtByHexId,
-      useUploadList: useUploadListBL,
+      useUploadList: useUploadListLSSTIMT,
       multerOpt: "csvFile",
       maxFiles: 1,
       multiple: false,
